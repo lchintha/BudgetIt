@@ -18,4 +18,18 @@ expect class Storage {
      * @return The stored double value or defaultValue if not found
      */
     suspend fun getDouble(key: String, defaultValue: Double): Double
+
+    /**
+     * Stores a string value with the given key
+     * @param key The key to store the value under
+     * @param value The string value to store
+     */
+    suspend fun putString(key: String, value: String)
+
+    /**
+     * Stores a string value with the given key
+     * @param key The key to store the value under
+     * @param value The string value to store
+     */
+    suspend fun getString(key: String, defaultValue: String): String
 }

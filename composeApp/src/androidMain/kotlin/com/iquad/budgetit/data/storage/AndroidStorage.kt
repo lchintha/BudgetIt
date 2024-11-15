@@ -7,6 +7,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.doublePreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
@@ -22,7 +23,7 @@ actual class Storage(private val context: Context) {
      * Note: This is a blocking call wrapped in runBlocking because the interface
      * is synchronous. In a real app, consider making the interface suspend.
      */
-    actual fun putDouble(key: String, value: Double) {
+    actual suspend fun putDouble(key: String, value: Double) {
         runBlocking {
             context.dataStore.edit { preferences ->
                 preferences[doublePreferencesKey(key)] = value
@@ -35,10 +36,30 @@ actual class Storage(private val context: Context) {
      * Note: This is a blocking call wrapped in runBlocking because the interface
      * is synchronous. In a real app, consider making the interface suspend.
      */
-    actual fun getDouble(key: String, defaultValue: Double): Double {
+    actual suspend fun getDouble(key: String, defaultValue: Double): Double {
         return runBlocking {
             context.dataStore.data.first()[doublePreferencesKey(key)] ?: defaultValue
         }
+    }
+
+    /**
+     * Stores a string value with the given key using DataStore
+     * Note: This is a blocking call wrapped in runBlocking because the interface
+     * is synchronous. In a real app, consider making the interface suspend.
+     */
+    actual suspend fun putString(key: String, value: String) {
+        context.dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(key)] = value
+        }
+    }
+
+    /**
+     * Retrieves a string value with the given key using DataStore
+     * Note: This is a blocking call wrapped in runBlocking because the interface
+     * is synchronous. In a real app, consider making the interface suspend.
+     */
+    actual suspend fun getString(key: String, defaultValue: String): String {
+        return context.dataStore.data.first()[stringPreferencesKey(key)] ?: defaultValue
     }
 
     companion object {
