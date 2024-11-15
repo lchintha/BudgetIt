@@ -2,6 +2,7 @@ package com.iquad.budgetit
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
 import com.iquad.budgetit.presentation.welcome.WelcomeScreen
 import com.iquad.budgetit.presentation.welcome.WelcomeScreenViewModel
 import moe.tlaster.precompose.PreComposeApp
@@ -16,7 +17,7 @@ import org.koin.compose.koinInject
 fun App() {
     MaterialTheme {
         val navigator = rememberNavigator()
-        PreComposeApp {
+         {
             NavHost(
                 navigator = navigator,
                 initialRoute = "welcome",

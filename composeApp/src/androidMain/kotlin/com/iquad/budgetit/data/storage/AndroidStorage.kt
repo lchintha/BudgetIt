@@ -16,7 +16,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 // Extension property for Context to create a single DataStore instance
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "budget_it_preferences")
@@ -25,32 +24,22 @@ actual class Storage(private val context: Context) {
 
     /**
      * Stores a double value with the given key using DataStore
-     * Note: This is a blocking call wrapped in runBlocking because the interface
-     * is synchronous. In a real app, consider making the interface suspend.
      */
     actual suspend fun putDouble(key: String, value: Double) {
-        runBlocking {
-            context.dataStore.edit { preferences ->
-                preferences[doublePreferencesKey(key)] = value
-            }
+        context.dataStore.edit { preferences ->
+            preferences[doublePreferencesKey(key)] = value
         }
     }
 
     /**
      * Retrieves a double value for the given key from DataStore
-     * Note: This is a blocking call wrapped in runBlocking because the interface
-     * is synchronous. In a real app, consider making the interface suspend.
      */
     actual suspend fun getDouble(key: String, defaultValue: Double): Double {
-        return runBlocking {
-            context.dataStore.data.first()[doublePreferencesKey(key)] ?: defaultValue
-        }
+        return context.dataStore.data.first()[doublePreferencesKey(key)] ?: defaultValue
     }
 
     /**
      * Stores a string value with the given key using DataStore
-     * Note: This is a blocking call wrapped in runBlocking because the interface
-     * is synchronous. In a real app, consider making the interface suspend.
      */
     actual suspend fun putString(key: String, value: String) {
         context.dataStore.edit { preferences ->
@@ -60,8 +49,6 @@ actual class Storage(private val context: Context) {
 
     /**
      * Retrieves a string value with the given key using DataStore
-     * Note: This is a blocking call wrapped in runBlocking because the interface
-     * is synchronous. In a real app, consider making the interface suspend.
      */
     actual suspend fun getString(key: String, defaultValue: String): String {
         return context.dataStore.data.first()[stringPreferencesKey(key)] ?: defaultValue

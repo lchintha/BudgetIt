@@ -1,7 +1,6 @@
 package com.iquad.budgetit.presentation.welcome
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.iquad.budgetit.domain.model.Currency
 import com.iquad.budgetit.domain.model.usecase.GetBudgetStatusUseCase
 import com.iquad.budgetit.domain.model.usecase.SetBudgetUseCase
