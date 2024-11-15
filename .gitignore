@@ -1,96 +1,18 @@
-# Ignore build outputs
-/build
-/.gradle
-/.idea
-/out
-
-# Ignore IntelliJ and Android Studio project files
 *.iml
-.idea/**
-.idea/*
-.idea/modules.xml
-.idea/workspace.xml
-.idea/dictionaries
-.idea/libraries
-
-# Ignore OS files
-.DS_Store
-Thumbs.db
-
-# Ignore local environment files
-*.local
-*.env
-*.keystore
-
-# Ignore Android-specific files
-*/build/
-*.apk
-*.ap_
-
-# Ignore Kotlin Multiplatform-specific directories
-# For Kotlin Multiplatform projects, builds happen in different submodules
-**/build
-*.module
-*.kotlin_metadata
-
-# Ignore Gradle wrapper files
-/gradle/wrapper/gradle-wrapper.properties
-/gradlew
-/gradlew.bat
-
-# Ignore user-specific Gradle properties and logs
-gradle.properties
-gradle-local.properties
-gradle-daemon.*
-gradle.log
-
-# Ignore JAR files
-*.jar
-*.war
-*.ear
-
-# Ignore generated files by Kotlin Native (e.g., CMake, cache, ObjC frameworks)
-*.klib
-.cmake
-cinterop
-*.d
-*.o
-*.a
-
-# Ignore Test Results
-/test-results
-/test-results/**
-/*.xml
-/test-outputs
-/test-outputs/**
-
-# Ignore IDE-specific workspace files
-.idea/vcs.xml
-.idea/tasks.xml
-.idea/runConfigurations/
-
-# Ignore local build cache
-/.gradle/caches/
-.gradle/caches/
-.gradle/caches/**/*
-
-# Ignore Kotlin Script caches
 .kotlin
-.idea/kotlin/
-buildSrc/build/
-buildSrc/.gradle/
-
-# Ignore logs and temporary files
-*.log
-hs_err_pid*
-*.pid
-
-# Ignore version control hidden files
-.svn
-.hg
-.git
-
-# Ignore macOS-specific files
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
 .DS_Store
-.Trashes
-.AppleDouble
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
