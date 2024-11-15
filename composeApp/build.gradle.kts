@@ -72,6 +72,8 @@ kotlin {
             implementation(projects.shared)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.precompose)
+            implementation(libs.precompose.viewmodel)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

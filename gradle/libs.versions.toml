@@ -19,6 +19,7 @@ kotlinx-coroutines = "1.9.0"
 ktor = "3.0.0"
 logback = "1.5.11"
 koin = "4.0.0"
+precompose = "1.6.2"
 
 
 [libraries]
@@ -48,6 +49,8 @@ koin-core = { module = "io.insert-koin", name = "koin-core", version.ref = "koin
 koin-android = { module = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 koin-test = { module = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+precompose = { module = "moe.tlaster", name = "precompose", version.ref = "precompose" }
+precompose-viewmodel = { module = "moe.tlaster", name = "precompose-viewmodel", version.ref = "precompose" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
