@@ -2,7 +2,6 @@ package com.iquad.budgetit.presentation.welcome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iquad.budgetit.domain.model.Budget
 import com.iquad.budgetit.domain.model.Currency
 import com.iquad.budgetit.domain.model.usecase.GetBudgetStatusUseCase
 import com.iquad.budgetit.domain.model.usecase.SetBudgetUseCase
@@ -41,10 +40,12 @@ class WelcomeScreenViewModel(
      */
     fun onBudgetChanged(newValue: String) {
         val numericValue = newValue.filter { it.isDigit() || it == '.' }
-        _state.update { it.copy(
-            budgetText = numericValue,
-            showError = false
-        ) }
+        _state.update {
+            it.copy(
+                budgetText = numericValue,
+                showError = false
+            )
+        }
     }
 
     /**
@@ -71,17 +72,21 @@ class WelcomeScreenViewModel(
                 val budget = state.value.budgetText.toDoubleOrNull()
 
                 if (budget != null && budget > 0) {
-                    setBudgetUseCase(Budget(amount = budget, currency = state.value.selectedCurrency))
+                    setBudgetUseCase(
+                        amount = budget,
+                        currency = state.value.selectedCurrency
+                    )
                     _state.update { it.copy(shouldNavigateToHome = true) }
                 } else {
                     _state.update { it.copy(showError = true) }
                 }
             } catch (e: Exception) {
                 // Handle storage errors
-                _state.update { it.copy(
-                    showError = true,
-                    errorMessage = "Failed to save budget: ${e.message}"
-                ) }
+                _state.update {
+                    it.copy(
+                        showError = true
+                    )
+                }
             }
         }
     }

@@ -1,8 +1,8 @@
 package com.iquad.budgetit.domain.model.repository
 
+import com.iquad.budgetit.data.storage.Storage
 import com.iquad.budgetit.domain.model.Budget
 import com.iquad.budgetit.domain.model.Currency
-import com.iquad.budgetit.data.storage.Storage
 
 /**
  * This class implements the BudgetRepository interface from the domain layer.
@@ -21,7 +21,8 @@ class BudgetRepositoryImpl(
         val amount = storage.getDouble(KEY_BUDGET_AMOUNT, -1.0)
         if (amount == -1.0) return null
         val currencyCode = storage.getString(KEY_BUDGET_CURRENCY, Currency.DEFAULT.code)
-        val currency = Currency.SUPPORTED_CURRENCIES.find { it.code == currencyCode } ?: Currency.DEFAULT
+        val currency =
+            Currency.SUPPORTED_CURRENCIES.find { it.code == currencyCode } ?: Currency.DEFAULT
         return Budget(amount, currency)
     }
 

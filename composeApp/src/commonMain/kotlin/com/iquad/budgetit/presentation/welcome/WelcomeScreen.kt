@@ -13,6 +13,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -60,7 +62,7 @@ fun WelcomeScreen(
         // Subtitle
         Text(
             text = "Setting a monthly budget helps you track spending\n" +
-                   "and reach your financial goals",
+                    "and reach your financial goals",
             style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
