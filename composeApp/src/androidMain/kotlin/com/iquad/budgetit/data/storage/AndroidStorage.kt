@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -80,5 +81,5 @@ actual class Storage(private val context: Context) {
 @Composable
 actual fun rememberStorage(): Storage {
     val context = LocalContext.current
-    return remember { com.iquad.budgetit.data.storage.Storage(context) }
+    return remember { Storage(context) }
 }
