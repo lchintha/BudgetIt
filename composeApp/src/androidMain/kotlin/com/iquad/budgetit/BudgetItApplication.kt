@@ -1,21 +1,23 @@
 package com.iquad.budgetit
 
 import android.app.Application
-import com.iquad.budgetit.di.coreModule
-import com.iquad.budgetit.di.platformModule
+import com.iquad.budgetit.di.androidModule
+
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class BudgetItApplication : Application() {
+
+
+import com.iquad.budgetit.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+
+class BudgetApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-
         startKoin {
-            androidContext(this@BudgetItApplication)
-            modules(
-                coreModule(),
-                platformModule(this@BudgetItApplication)
-            )
+            androidContext(this@BudgetApplication)
+            modules(appModule + androidModule)
         }
     }
 }

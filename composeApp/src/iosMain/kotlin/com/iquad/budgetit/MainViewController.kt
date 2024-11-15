@@ -1,16 +1,13 @@
 package com.iquad.budgetit
 
-import androidx.compose.ui.window.ComposeUIViewController
-import com.iquad.budgetit.di.coreModule
-import com.iquad.budgetit.di.platformModule
+import com.yourapp.budgetit.data.datastore.IosDataStoreProvider
+import com.iquad.budgetit.di.appModule
+import com.iquad.budgetit.di.IosModule
 import org.koin.core.context.startKoin
 
 fun initKoin() {
     startKoin {
-        modules(
-            coreModule(),
-            platformModule()
-        )
+        modules(appModule, IosMo)
     }
 }
 

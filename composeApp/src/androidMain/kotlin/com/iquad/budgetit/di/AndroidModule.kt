@@ -1,10 +1,19 @@
 package com.iquad.budgetit.di
 
+
 import android.content.Context
-import com.iquad.budgetit.data.storage.Storage
-import org.koin.core.module.Module
+import com.iquad.budgetit.data.storage.DataStoreProvider
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
-actual fun platformModule(context: Context): Module = module {
-    single<Storage> { Storage(context) }
+val androidModule = module {
+    single {
+        // Provide Android Context
+        androidContext() as Context
+    }
+
+    // Android-specific DataStoreProvider
+    single {
+        DataStoreProvider(get())
+    }
 }

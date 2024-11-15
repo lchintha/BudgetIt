@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.iquad.budgetit.data.proto";
+option java_multiple_files = true;
+
+message BudgetPreferences {
+  double amount = 1;
+  string currency = 2;
+  bool is_budget_set = 3;
+}
