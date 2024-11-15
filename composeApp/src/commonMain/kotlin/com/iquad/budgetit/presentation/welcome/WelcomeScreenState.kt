@@ -1,3 +1,7 @@
+package com.iquad.budgetit.presentation.welcome
+
+import com.iquad.budgetit.domain.model.Currency
+
 /**
  * This data class represents the UI state for the welcome screen.
  * Following the unidirectional data flow pattern, all UI state is centralized here.

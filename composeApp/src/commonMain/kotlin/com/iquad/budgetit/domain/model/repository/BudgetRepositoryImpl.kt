@@ -1,3 +1,9 @@
+package com.iquad.budgetit.domain.model.repository
+
+import com.iquad.budgetit.domain.model.Budget
+import com.iquad.budgetit.domain.model.Currency
+import com.iquad.budgetit.data.storage.Storage
+
 /**
  * This class implements the BudgetRepository interface from the domain layer.
  * It handles the actual data operations using the Storage interface for persistence.

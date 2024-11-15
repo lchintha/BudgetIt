@@ -5,13 +5,14 @@ package com.iquad.budgetit.data.storage
  * In Kotlin Multiplatform, 'expect' declarations require actual implementations in each platform-specific
  * source set (androidMain and iosMain).
  */
-expect class Storage {
+actual class Storage {
     /**
      * Stores a double value with the given key
      * @param key The key to store the value under
      * @param value The double value to store
      */
-    suspend fun putDouble(key: String, value: Double)
+    actual suspend fun putDouble(key: String, value: Double) {
+    }
 
     /**
      * Retrieves a double value for the given key
@@ -19,19 +20,25 @@ expect class Storage {
      * @param defaultValue The value to return if the key doesn't exist
      * @return The stored double value or defaultValue if not found
      */
-    suspend fun getDouble(key: String, defaultValue: Double): Double
+    actual suspend fun getDouble(key: String, defaultValue: Double): Double {
+        TODO("Not yet implemented")
+    }
 
     /**
      * Stores a string value with the given key
      * @param key The key to store the value under
      * @param value The string value to store
      */
-    suspend fun putString(key: String, value: String)
+    actual suspend fun putString(key: String, value: String) {
+    }
 
     /**
      * Stores a string value with the given key
      * @param key The key to store the value under
      * @param value The string value to store
      */
-    suspend fun getString(key: String, defaultValue: String): String
+    actual suspend fun getString(key: String, defaultValue: String): String {
+        TODO("Not yet implemented")
+    }
+
 }

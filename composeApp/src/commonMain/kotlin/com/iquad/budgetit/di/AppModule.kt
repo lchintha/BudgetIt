@@ -1,7 +1,13 @@
+package com.iquad.budgetit.di
+
 /**
  * This file contains all the Koin modules for dependency injection
  */
-import org.koin.core.module.Module
+import com.iquad.budgetit.domain.model.repository.BudgetRepository
+import com.iquad.budgetit.domain.model.repository.BudgetRepositoryImpl
+import com.iquad.budgetit.domain.model.usecase.GetBudgetStatusUseCase
+import com.iquad.budgetit.domain.model.usecase.SetBudgetUseCase
+import com.iquad.budgetit.presentation.welcome.WelcomeScreenViewModel
 import org.koin.dsl.module
 
 /**

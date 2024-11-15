@@ -1,3 +1,5 @@
+package com.iquad.budgetit.domain.model
+
 /**
  * Data class representing a currency with its symbol and code
  */

@@ -110,6 +110,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.datastore.preferences.core.jvm)
+    implementation(libs.androidx.runtime.desktop)
+    implementation(libs.androidx.ui.tooling.preview.android)
     debugImplementation(compose.uiTooling)
 }
 

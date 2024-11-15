@@ -1,3 +1,5 @@
+package com.iquad.budgetit.presentation.welcome.components
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -7,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.iquad.budgetit.domain.model.Currency
 
 @Composable
 fun CurrencySelector(

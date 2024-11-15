@@ -1,3 +1,17 @@
+package com.iquad.budgetit.presentation.welcome
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.iquad.budgetit.domain.model.Budget
+import com.iquad.budgetit.domain.model.Currency
+import com.iquad.budgetit.domain.model.usecase.GetBudgetStatusUseCase
+import com.iquad.budgetit.domain.model.usecase.SetBudgetUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
 /**
  * The ViewModel for the welcome screen. It handles the business logic and state management
  * for the welcome screen UI. It communicates with the domain layer through use cases

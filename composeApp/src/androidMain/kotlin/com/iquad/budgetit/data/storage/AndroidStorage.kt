@@ -1,15 +1,19 @@
+package com.iquad.budgetit.data.storage
+
 /**
- * This is the Android-specific implementation of the Storage interface using Jetpack DataStore.
+ * This is the Android-specific implementation of the com.iquad.budgetit.data.storage.com.iquad.budgetit.data.storage.Storage interface using Jetpack DataStore.
  * It provides an asynchronous, consistent, and transactional way to store key-value pairs.
  */
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -71,10 +75,10 @@ actual class Storage(private val context: Context) {
 }
 
 /**
- * Platform-specific composable to create Storage instance
+ * Platform-specific composable to create com.iquad.budgetit.data.storage.com.iquad.budgetit.data.storage.Storage instance
  */
 @Composable
 actual fun rememberStorage(): Storage {
     val context = LocalContext.current
-    return remember { Storage(context) }
+    return remember { com.iquad.budgetit.data.storage.Storage(context) }
 }

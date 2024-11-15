@@ -1,3 +1,5 @@
+package com.iquad.budgetit.theme
+
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.material.darkColors

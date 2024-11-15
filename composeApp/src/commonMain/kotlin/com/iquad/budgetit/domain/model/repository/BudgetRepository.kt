@@ -1,3 +1,7 @@
+package com.iquad.budgetit.domain.model.repository
+
+import com.iquad.budgetit.domain.model.Budget
+
 interface BudgetRepository {
     /**
      * Persists the given budget to storage
