@@ -5,17 +5,17 @@ import okio.BufferedSink
 import okio.BufferedSource
 
 class BudgetPreferencesSerializer : Serializer<BudgetPreferencesKt> {
-    override val defaultValue: BudgetPreferences = BudgetPreferences.getDefaultInstance()
+    override val defaultValue: BudgetPreferencesKt = BudgetPreferencesKt.getDefaultInstance()
 
-    override suspend fun readFrom(source: BufferedSource): BudgetPreferences {
+    override suspend fun readFrom(source: BufferedSource): BudgetPreferencesKt {
         return try {
-            BudgetPreferences.parseFrom(source.readByteArray())
+            BudgetPreferencesKt.parseFrom(source.readByteArray())
         } catch (exception: Exception) {
             defaultValue
         }
     }
 
-    override suspend fun writeTo(t: BudgetPreferences, sink: BufferedSink) {
+    override suspend fun writeTo(t: BudgetPreferencesKt, sink: BufferedSink) {
         sink.write(t.toByteArray())
     }
 }

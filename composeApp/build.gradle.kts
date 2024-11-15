@@ -30,11 +30,6 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
-        dependencies {
-            implementation(libs.koin.android)
-            implementation(libs.datastore.preferences)
-            implementation(libs.datastore.core)
-        }
     }
 
     listOf(
@@ -58,8 +53,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -70,10 +64,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.androidx.datastore.proto)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.datastore.core)
+            implementation(libs.androidx.datastore.core)
+            implementation(libs.androidx.datastore.proto)
+            implementation(libs.datastore.preferences)
         }
     }
 }
