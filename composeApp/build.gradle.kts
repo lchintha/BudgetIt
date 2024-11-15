@@ -1,3 +1,4 @@
+import com.google.protobuf.gradle.proto
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -12,7 +13,12 @@ plugins {
 // Add Protobuf configuration
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.25.1"
+        artifact = "com.google.protobuf:protoc:4.28.3"
+    }
+    plugins {
+        create("kotlin") {
+            artifact = "io.grpc:protoc-gen-kotlin:1.3.0:jdk8@jar"
+        }
     }
     generateProtoTasks {
         all().forEach { task ->
@@ -59,7 +65,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -68,7 +74,11 @@ kotlin {
             implementation(libs.androidx.datastore.proto)
             implementation(libs.protobuf.kotlin.lite)
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
             implementation(libs.datastore.core)
+        }
+        commonMain {
+            kotlin.srcDir("build/generated/source/proto/main/kotlin")
         }
     }
 }
@@ -98,8 +108,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    sourceSets["main"].proto {
+        srcDir("src/commonMain/proto")
+    }
 }
 
 dependencies {
+    implementation(libs.protobuf.kotlin.lite)
+    implementation(libs.datastore.core)
     debugImplementation(compose.uiTooling)
 }

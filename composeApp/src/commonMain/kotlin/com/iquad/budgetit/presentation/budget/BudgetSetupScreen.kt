@@ -1,32 +1,38 @@
 package com.iquad.budgetit.presentation.budget
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import org.koin.compose.koinInject
 
-class BudgetSetupScreen : Screen {
-    @Composable
-    override fun Content() {
-        val viewModel = getScreenModel<BudgetSetupViewModel>()
-        val state by viewModel.state.collectAsState()
+@Composable
+fun BudgetSetupScreen(
+    onNavigateNext: () -> Unit
+) {
+    val viewModel = koinInject<BudgetSetupViewModel>()
+    val state by viewModel.state.collectAsState()
 
-        LaunchedEffect(state.isBudgetSet) {
-            if (state.isBudgetSet) {
-                // Navigate to next screen
-            }
+    LaunchedEffect(state.isBudgetSet) {
+        if (state.isBudgetSet) {
+            onNavigateNext()
         }
-
-        BudgetSetupContent(
-            state = state,
-            onAmountChanged = viewModel::onAmountChanged,
-            onCurrencySelected = viewModel::onCurrencySelected,
-            onContinueClicked = viewModel::onContinueClicked
-        )
     }
+
+    BudgetSetupContent(
+        state = state,
+        onAmountChanged = viewModel::onAmountChanged,
+        onCurrencySelected = viewModel::onCurrencySelected,
+        onContinueClicked = viewModel::onContinueClicked
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BudgetSetupContent(
     state: BudgetSetupState,
@@ -65,7 +71,10 @@ private fun BudgetSetupContent(
                     onValueChange = { },
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier.menuAnchor(
+                        type = MenuAnchorType.PrimaryEditable,
+                        enabled = true
+                    )
                 )
 
                 ExposedDropdownMenu(

@@ -1,7 +1,7 @@
 package com.iquad.budgetit.data.storage
 
-
-import com.iquad.budgetit.data.proto.BudgetPreferences
+import androidx.datastore.core.Serializer
+import com.iquad.budgetit.proto.BudgetPreferences
 import okio.BufferedSink
 import okio.BufferedSource
 

@@ -3,6 +3,7 @@ package com.iquad.budgetit.data.repository
 import androidx.datastore.core.DataStore
 import com.iquad.budgetit.domain.model.Budget
 import com.iquad.budgetit.domain.repository.BudgetRepository
+import com.iquad.budgetit.proto.BudgetPreferences
 import kotlinx.coroutines.flow.first
 
 class BudgetRepositoryImpl(

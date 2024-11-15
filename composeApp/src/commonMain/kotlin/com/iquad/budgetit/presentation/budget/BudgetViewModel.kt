@@ -1,8 +1,8 @@
 package com.iquad.budgetit.presentation.budget
 
-// Path: composeApp/src/commonMain/kotlin/com/yourpackage/presentation/budget/BudgetSetupViewModel.kt
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.coroutineScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.iquad.budgetit.domain.model.Budget
 import com.iquad.budgetit.domain.repository.BudgetRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class BudgetSetupViewModel(
     private val budgetRepository: BudgetRepository
-) : ScreenModel {
+) : ViewModel() {
     private val _state = MutableStateFlow(BudgetSetupState())
     val state = _state.asStateFlow()
 
@@ -20,7 +20,7 @@ class BudgetSetupViewModel(
     }
 
     private fun checkBudgetStatus() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             budgetRepository.hasBudgetSet()
                 .onSuccess { isBudgetSet ->
                     _state.update { it.copy(isBudgetSet = isBudgetSet) }
@@ -47,7 +47,7 @@ class BudgetSetupViewModel(
     }
 
     fun onContinueClicked() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false, errorMessage = null) }
 
             val amount = _state.value.amount.toDoubleOrNull() ?: 0.0
