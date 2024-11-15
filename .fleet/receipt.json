@@ -12,21 +12,6 @@
         "ui": [
           "compose"
         ]
-      },
-      "desktop": {
-        "ui": [
-          "compose"
-        ]
-      },
-      "web": {
-        "ui": [
-          "compose"
-        ]
-      },
-      "server": {
-        "engine": [
-          "ktor"
-        ]
       }
     }
   },
