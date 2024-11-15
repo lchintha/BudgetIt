@@ -15,17 +15,10 @@ protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:4.28.3"
     }
-    plugins {
-        create("kotlin") {
-            artifact = "io.grpc:protoc-gen-kotlin:1.3.0:jdk8@jar"
-        }
-    }
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
-                create("kotlin") {
-                    option("lite")
-                }
+                create("kotlin")
             }
         }
     }
@@ -56,6 +49,12 @@ kotlin {
     }
 
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.protobuf.kotlin)
+                kotlin.srcDir("build/generated/source/proto/debug/kotlin")
+            }
+        }
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -72,13 +71,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.datastore.proto)
-            implementation(libs.protobuf.kotlin.lite)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.datastore.core)
-        }
-        commonMain {
-            kotlin.srcDir("build/generated/source/proto/main/kotlin")
         }
     }
 }
@@ -114,7 +109,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.protobuf.kotlin.lite)
-    implementation(libs.datastore.core)
     debugImplementation(compose.uiTooling)
 }

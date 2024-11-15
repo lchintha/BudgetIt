@@ -4,7 +4,7 @@ import shared
 @main
 struct BudgetItApp: App {
     init() {
-         KoinIOSKt.doInitKoin()
+         KoinIosKt.doInitKoin()
     }
 
     var body: some Scene {

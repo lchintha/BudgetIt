@@ -1,11 +1,10 @@
 package com.iquad.budgetit.data.storage
 
-import androidx.datastore.core.Serializer
-import com.iquad.budgetit.proto.BudgetPreferences
+import com.iquad.budgetit.proto.BudgetPreferencesKt
 import okio.BufferedSink
 import okio.BufferedSource
 
-class BudgetPreferencesSerializer : Serializer<BudgetPreferences> {
+class BudgetPreferencesSerializer : Serializer<BudgetPreferencesKt> {
     override val defaultValue: BudgetPreferences = BudgetPreferences.getDefaultInstance()
 
     override suspend fun readFrom(source: BufferedSource): BudgetPreferences {

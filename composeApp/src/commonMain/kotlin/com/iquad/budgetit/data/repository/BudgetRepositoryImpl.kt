@@ -1,13 +1,14 @@
 package com.iquad.budgetit.data.repository
 
 import androidx.datastore.core.DataStore
+import com.iquad.budgetit.data.storage.BudgetPreferencesSerializer
 import com.iquad.budgetit.domain.model.Budget
 import com.iquad.budgetit.domain.repository.BudgetRepository
-import com.iquad.budgetit.proto.BudgetPreferences
+import com.iquad.budgetit.proto.BudgetPreferencesKt
 import kotlinx.coroutines.flow.first
 
 class BudgetRepositoryImpl(
-    private val dataStore: DataStore<BudgetPreferences>
+    private val dataStore: DataStore<BudgetPreferencesKt>
 ) : BudgetRepository {
 
     override suspend fun saveBudget(budget: Budget): Result<Unit> = runCatching {

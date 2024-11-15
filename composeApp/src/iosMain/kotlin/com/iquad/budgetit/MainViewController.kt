@@ -1,12 +1,6 @@
 package com.iquad.budgetit
 
-import com.iquad.budgetit.di.appModule
-import org.koin.core.context.startKoin
+import androidx.compose.ui.window.ComposeUIViewController
 
-fun initKoin() {
-    startKoin {
-        modules(appModule, IosMo)
-    }
-}
 
 fun MainViewController() = ComposeUIViewController { App() }

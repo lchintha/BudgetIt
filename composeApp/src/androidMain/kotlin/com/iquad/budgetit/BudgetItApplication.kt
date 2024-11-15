@@ -1,6 +1,5 @@
 package com.iquad.budgetit
 
-
 import android.app.Application
 import com.iquad.budgetit.di.androidModule
 import com.iquad.budgetit.di.appModule
