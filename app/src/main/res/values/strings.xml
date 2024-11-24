@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BudgetIt</string>
+
+    <string name="welcome_to_budget_it">Welcome to Budget It</string>
+    <string name="enter_budget_description">Setting a monthly budget helps you track spending and reach your financial goals</string>
+    <string name="enter_budget">Enter Budget</string>
+
+    <string name="btn_continue">Continue</string>
 </resources>
