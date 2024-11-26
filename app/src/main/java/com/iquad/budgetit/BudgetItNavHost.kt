@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.enterbudget.EnterBudgetScreen
+import com.iquad.budgetit.homescreen.HomeScreen
 
 @Composable
 fun BudgetItNavHost(innerPadding: PaddingValues) {
@@ -19,6 +20,12 @@ fun BudgetItNavHost(innerPadding: PaddingValues) {
     ) {
         composable(route = Screen.EnterBudget.route) {
             EnterBudgetScreen(navController)
+        }
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen(navController)
+        }
+        composable(route = Screen.AddExpenseScreen.route) {
+            AddExpenseScreen(navController)
         }
     }
 }

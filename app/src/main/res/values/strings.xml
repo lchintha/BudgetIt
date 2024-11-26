@@ -6,4 +6,15 @@
     <string name="enter_budget">Enter Budget</string>
 
     <string name="btn_continue">Continue</string>
+    <string name="budget_tracker">Budget Tracker</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="recent_expenses">Recent Expenses</string>
+    <string name="all">All</string>
+    
+    <string name="save">Save</string>
+    <string name="whats_this_expense_for">What\'s this expense for?</string>
+    <string name="category">Category</string>
+    <string name="edit">Edit</string>
+    <string name="enter_amount">Enter Amount</string>
+    
 </resources>

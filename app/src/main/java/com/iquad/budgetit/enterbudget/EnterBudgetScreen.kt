@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -92,7 +93,9 @@ fun EnterBudgetScreen(navController: NavController) {
                 .padding(start = 12.dp, end = 12.dp, bottom = 36.dp)
                 .height(48.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.colorPrimary)
+            )
         ) {
             Text(
                 text = stringResource(R.string.btn_continue),
@@ -135,7 +138,7 @@ fun BudgetInputField() {
             ) {
                 Text(
                     text = "$",
-                    color = Color.Blue,
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -185,6 +188,5 @@ fun BudgetInputField() {
 @Preview(showBackground = true)
 @Composable
 fun EnterBudgetScreenPreview() {
-//    WrapTextFields()
     EnterBudgetScreen(navController = rememberNavController())
 }
