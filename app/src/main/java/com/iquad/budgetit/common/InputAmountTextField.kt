@@ -13,9 +13,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
@@ -30,9 +34,10 @@ fun InputAmountTextField(
         modifier = modifier.fillMaxWidth(),
         value = amount,
         onValueChange = { input ->
-            if (input.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
-                amount = input
-                onValueChange(input)
+            val cleanInput = input.removePrefix("$")
+            if (cleanInput.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
+                amount = cleanInput
+                onValueChange(cleanInput)
             }
         },
         placeholder = {
@@ -53,7 +58,7 @@ fun InputAmountTextField(
             keyboardType = KeyboardType.Decimal,
             imeAction = ImeAction.Done
         ),
-//        visualTransformation = DollarVisualTransformation(),
+        visualTransformation = CurrencyVisualTransformation(),
         singleLine = true,
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = Color.Transparent,
@@ -63,6 +68,30 @@ fun InputAmountTextField(
             cursorColor = Color.Transparent
         ),
     )
+}
+
+class CurrencyVisualTransformation : VisualTransformation{
+    override fun filter(text: AnnotatedString): TransformedText {
+        val transformedText = if (text.isNotEmpty()) {
+            AnnotatedString("$$text")
+        } else {
+            text
+        }
+        return TransformedText(transformedText, CurrencyOffsetMapping(transformedText))
+    }
+}
+
+class CurrencyOffsetMapping(transformedText: AnnotatedString): OffsetMapping{
+    private val text = transformedText.text
+    override fun originalToTransformed(offset: Int): Int {
+        if(text.isEmpty()) return 0
+        return text.length-1
+    }
+
+    override fun transformedToOriginal(offset: Int): Int {
+        if(text.isEmpty()) return 0
+        return text.length-1
+    }
 }
 
 @Preview
