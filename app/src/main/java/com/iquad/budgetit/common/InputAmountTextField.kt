@@ -30,7 +30,7 @@ fun InputAmountTextField(
         modifier = modifier.fillMaxWidth(),
         value = amount,
         onValueChange = { input ->
-            if (input.matches(Regex("^\\d*\\.?\\d*\$"))) {
+            if (input.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
                 amount = input
                 onValueChange(input)
             }
