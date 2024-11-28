@@ -47,7 +47,7 @@ fun HomeScreen(navController: NavController) {
         HomeScreenToolBar()
         Spacer(modifier = Modifier.height(8.dp))
         HalfCircleProgressBar(
-            spentAmount = 50f,
+            spentAmount = 5000f,
             totalAmount = 100f
         )
         AddExpenseButton(navController)
@@ -74,7 +74,10 @@ fun HomeScreenToolBar() {
         IconButton(onClick = {
             //Navigate to Settings
         }) {
-            Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings"
+            )
         }
     }
 }

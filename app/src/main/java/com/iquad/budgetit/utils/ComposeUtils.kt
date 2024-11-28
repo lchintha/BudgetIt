@@ -1,4 +1,4 @@
-package com.iquad.budgetit.common
+package com.iquad.budgetit.utils
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

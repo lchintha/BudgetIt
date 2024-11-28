@@ -1,5 +1,6 @@
-package com.iquad.budgetit.common
+package com.iquad.budgetit.utils
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,44 +31,53 @@ fun InputAmountTextField(
 ) {
     var amount by remember { mutableStateOf("") }
 
-    TextField(
-        modifier = modifier.fillMaxWidth(),
-        value = amount,
-        onValueChange = { input ->
-            val cleanInput = input.removePrefix("$")
-            if (cleanInput.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
-                amount = cleanInput
-                onValueChange(cleanInput)
-            }
-        },
-        placeholder = {
-            Text(
-                text = "$0",
-                modifier = Modifier.fillMaxWidth(),
-                color = Color.Black,
-                fontSize = 36.sp,
-                textAlign = TextAlign.Center
-            )
-        },
-        textStyle = TextStyle(
-            fontSize = 36.sp,
-            textAlign = TextAlign.Center,
+    Column {
+        TextField(
+            modifier = modifier.fillMaxWidth(),
+            value = amount,
+            onValueChange = { input ->
+                val cleanInput = input.removePrefix("$")
+                if (cleanInput.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
+                    amount = cleanInput
+                    onValueChange(cleanInput)
+                }
+            },
+            placeholder = {
+                Text(
+                    text = "$0",
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center
+                )
+            },
+            textStyle = TextStyle(
+                fontSize = 24.sp,
+                textAlign = TextAlign.Center,
 
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Decimal,
-            imeAction = ImeAction.Done
-        ),
-        visualTransformation = CurrencyVisualTransformation(),
-        singleLine = true,
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            cursorColor = Color.Transparent
-        ),
-    )
+                ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal,
+                imeAction = ImeAction.Done
+            ),
+            visualTransformation = CurrencyVisualTransformation(),
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                cursorColor = Color.Transparent
+            ),
+        )
+        Text(
+            text = "Enter Amount",
+            modifier = Modifier.fillMaxWidth(),
+            color = Color.Gray,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp
+        )
+    }
 }
 
 class CurrencyVisualTransformation : VisualTransformation{
