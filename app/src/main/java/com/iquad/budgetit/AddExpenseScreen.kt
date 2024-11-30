@@ -3,6 +3,7 @@ package com.iquad.budgetit
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,10 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -85,7 +88,10 @@ fun AddExpenseScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Box(modifier = Modifier.weight(1f)) {
-                    CategoriesList(getCategories())
+                    CategoriesList(
+                        getCategories(),
+                        onCategorySelected = {}
+                    )
                 }
             }
         }
@@ -126,7 +132,11 @@ fun CategoriesTitle() {
 }
 
 @Composable
-fun CategoriesList(categories: List<Category>) {
+fun CategoriesList(
+    categories: List<Category>,
+    onCategorySelected: () -> Unit
+) {
+    var selectedCategory by remember { mutableStateOf<Category?>(null) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,23 +148,54 @@ fun CategoriesList(categories: List<Category>) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(categories) { category ->
-                CategoryItem(category)
+                CategoryItem(
+                    category = category,
+                    isSelected = category == selectedCategory,
+                    onCategoryClick = {
+                        selectedCategory = category
+                        onCategorySelected()
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun CategoryItem(category: Category) {
+fun CategoryItem(
+    category: Category,
+    isSelected: Boolean,
+    onCategoryClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(80.dp)
+        modifier = Modifier
+            .width(80.dp)
+            .clickable(
+                interactionSource = null,
+                indication = null,
+                onClick = onCategoryClick
+            )
     ) {
         Box(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape)
-                .background(category.color.toComposeColor()),
+                .background(category.color.toComposeColor())
+                .border(
+                    width = 3.dp,
+                    color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,
+                    shape = CircleShape
+                )
+                .graphicsLayer {
+                    if (isSelected) {
+                        scaleX = 1.2f
+                        scaleY = 1.2f
+                    } else {
+                        scaleX = 1f
+                        scaleY = 1f
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -205,13 +246,13 @@ fun AddExpenseScreenPreview() {
 
 fun getCategories(): List<Category> {
     val categories = listOf(
-        Category("Food", CategoryIcon.ADD, "#FF0000"),
-        Category("Travel", CategoryIcon.PERSON, "#00FF00"),
-        Category("Shopping", CategoryIcon.HOME, "#0000FF"),
-        Category("Entertainment", CategoryIcon.SETTINGS, "#FFFF00"),
-        Category("Other", CategoryIcon.SHOPPING, "#FF00FF"),
-        Category("Food", CategoryIcon.ADD, "#FF0000"),
-        Category("Travel", CategoryIcon.PERSON, "#00FF00")
+        Category(1, "Food", CategoryIcon.ADD, "#FF0000"),
+        Category(2, "Travel", CategoryIcon.PERSON, "#00FF00"),
+        Category(3, "Shopping", CategoryIcon.HOME, "#0000FF"),
+        Category(4, "Entertainment", CategoryIcon.SETTINGS, "#FFFF00"),
+        Category(5, "Other", CategoryIcon.SHOPPING, "#FF00FF"),
+        Category(6, "Food", CategoryIcon.ADD, "#FF0000"),
+        Category(7, "Travel", CategoryIcon.PERSON, "#00FF00")
     )
     return categories
 }
