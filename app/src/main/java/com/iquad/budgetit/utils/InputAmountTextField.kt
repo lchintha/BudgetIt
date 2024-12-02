@@ -2,6 +2,7 @@ package com.iquad.budgetit.utils
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -47,12 +49,12 @@ fun InputAmountTextField(
                     text = "$0",
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.Black,
-                    fontSize = 24.sp,
+                    fontSize = 36.sp,
                     textAlign = TextAlign.Center
                 )
             },
             textStyle = TextStyle(
-                fontSize = 24.sp,
+                fontSize = 36.sp,
                 textAlign = TextAlign.Center,
 
                 ),

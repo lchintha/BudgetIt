@@ -16,5 +16,6 @@
     <string name="category">Category</string>
     <string name="edit">Edit</string>
     <string name="enter_amount">Enter Amount</string>
+    <string name="done">Done</string>
     
 </resources>

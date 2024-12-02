@@ -23,11 +23,20 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,8 +63,14 @@ import com.iquad.budgetit.utils.toComposeColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(navController: NavController) {
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var isEditable by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -84,19 +99,25 @@ fun AddExpenseScreen(navController: NavController) {
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                CategoriesTitle()
+                CategoriesTitle(
+                    isEditMode = isEditable,
+                    onEditButtonClick = {
+                        isEditable = !isEditable
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Box(modifier = Modifier.weight(1f)) {
                     CategoriesList(
                         getCategories(),
-                        onCategorySelected = {}
+                        onCategorySelected = {},
+                        isEditMode = isEditable
                     )
                 }
             }
         }
 
-        BottomCalendarSection(
+        CalendarButton(
+            selectedDate = selectedDate,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .wrapContentWidth()
@@ -105,12 +126,46 @@ fun AddExpenseScreen(navController: NavController) {
                     BorderStroke(width = 1.dp, color = Color.Gray),
                     shape = RoundedCornerShape(8.dp)
                 )
+                .clickable { showBottomSheet = true }
         )
+    }
+
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate.toEpochDay() * 86400000,
+        yearRange = IntRange(2000, 2100)
+    )
+
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let {
+            val newSelectedDate = LocalDate.ofEpochDay(it / 86400000)
+            selectedDate = newSelectedDate
+            showBottomSheet = false
+        }
+    }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState,
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false,
+                headline = null,
+                title = null,
+                colors = DatePickerDefaults.colors(
+                    containerColor = colorResource(R.color.background),
+                )
+            )
+        }
     }
 }
 
 @Composable
-fun CategoriesTitle() {
+fun CategoriesTitle(
+    isEditMode: Boolean,
+    onEditButtonClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -123,10 +178,12 @@ fun CategoriesTitle() {
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = stringResource(R.string.edit),
+            text = if(isEditMode) stringResource(R.string.done) else stringResource(R.string.edit),
             style = MaterialTheme.typography.titleMedium.copy(
                 color = colorResource(R.color.colorPrimary)
-            )
+            ),
+            modifier = Modifier
+                .clickable(onClick = onEditButtonClick)
         )
     }
 }
@@ -134,7 +191,8 @@ fun CategoriesTitle() {
 @Composable
 fun CategoriesList(
     categories: List<Category>,
-    onCategorySelected: () -> Unit
+    onCategorySelected: () -> Unit,
+    isEditMode: Boolean
 ) {
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     Column(
@@ -154,7 +212,9 @@ fun CategoriesList(
                     onCategoryClick = {
                         selectedCategory = category
                         onCategorySelected()
-                    }
+                    },
+                    isEditMode = isEditMode,
+                    onDeleteCategory = {}
                 )
             }
         }
@@ -165,7 +225,9 @@ fun CategoriesList(
 fun CategoryItem(
     category: Category,
     isSelected: Boolean,
-    onCategoryClick: () -> Unit
+    onCategoryClick: () -> Unit,
+    isEditMode: Boolean,
+    onDeleteCategory: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -204,6 +266,28 @@ fun CategoryItem(
                 tint = Color.Black,
                 modifier = Modifier.size(30.dp)
             )
+
+            if (isEditMode) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(Color.Red.copy(alpha = 0.7f)),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    IconButton(
+                        onClick = { onDeleteCategory.invoke() },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Delete Category",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -216,11 +300,10 @@ fun CategoryItem(
 }
 
 @Composable
-fun BottomCalendarSection(
-    modifier: Modifier = Modifier,
-    onDateSelected: (LocalDate) -> Unit = {}
+fun CalendarButton(
+    selectedDate: LocalDate,
+    modifier: Modifier = Modifier
 ) {
-    val selectedDate by remember { mutableStateOf(LocalDate.now()) }
     Row(
         modifier = modifier
             .padding(8.dp),
