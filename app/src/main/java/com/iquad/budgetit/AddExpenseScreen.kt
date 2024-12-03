@@ -1,5 +1,11 @@
 package com.iquad.budgetit
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -178,7 +185,7 @@ fun CategoriesTitle(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = if(isEditMode) stringResource(R.string.done) else stringResource(R.string.edit),
+            text = if (isEditMode) stringResource(R.string.done) else stringResource(R.string.edit),
             style = MaterialTheme.typography.titleMedium.copy(
                 color = colorResource(R.color.colorPrimary)
             ),
@@ -208,7 +215,7 @@ fun CategoriesList(
             items(categories) { category ->
                 CategoryItem(
                     category = category,
-                    isSelected = category == selectedCategory,
+                    isSelected = if (!isEditMode) category == selectedCategory else false,
                     onCategoryClick = {
                         selectedCategory = category
                         onCategorySelected()
@@ -229,66 +236,86 @@ fun CategoryItem(
     isEditMode: Boolean,
     onDeleteCategory: () -> Unit
 ) {
+    val jiggleAnimation = rememberInfiniteTransition(label = "jiggle")
+    val jiggleAngle by jiggleAnimation.animateFloat(
+        initialValue = -2f,
+        targetValue = 2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(100, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "jiggle rotation"
+    )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .width(80.dp)
+            .width(70.dp)
             .clickable(
                 interactionSource = null,
                 indication = null,
                 onClick = onCategoryClick
             )
+            .graphicsLayer {
+                if (isEditMode)
+                    rotationZ = jiggleAngle
+            }
     ) {
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .clip(CircleShape)
-                .background(category.color.toComposeColor())
-                .border(
-                    width = 3.dp,
-                    color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,
-                    shape = CircleShape
-                )
-                .graphicsLayer {
-                    if (isSelected) {
-                        scaleX = 1.2f
-                        scaleY = 1.2f
-                    } else {
-                        scaleX = 1f
-                        scaleY = 1f
-                    }
-                },
-            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = category.icon.imageVector,
-                contentDescription = category.name,
-                tint = Color.Black,
-                modifier = Modifier.size(30.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .background(category.color.toComposeColor())
+                    .border(
+                        width = 3.dp,
+                        color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,
+                        shape = CircleShape
+                    )
+                    .graphicsLayer {
+                        if (isSelected) {
+                            scaleX = 1.2f
+                            scaleY = 1.2f
+                        } else {
+                            scaleX = 1f
+                            scaleY = 1f
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
 
+                Icon(
+                    imageVector = category.icon.imageVector,
+                    contentDescription = category.name,
+                    tint = Color.Black,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
             if (isEditMode) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
-                        .background(Color.Red.copy(alpha = 0.7f)),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.TopEnd
                 ) {
-                    IconButton(
-                        onClick = { onDeleteCategory.invoke() },
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Delete Category",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Delete Category",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red)
+                            .padding(4.dp)
+                            .clickable {
+                                onDeleteCategory.invoke()
+                            }
+                    )
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = category.name,
@@ -297,6 +324,7 @@ fun CategoryItem(
             modifier = Modifier.fillMaxWidth()
         )
     }
+
 }
 
 @Composable
@@ -329,13 +357,13 @@ fun AddExpenseScreenPreview() {
 
 fun getCategories(): List<Category> {
     val categories = listOf(
-        Category(1, "Food", CategoryIcon.ADD, "#FF0000"),
-        Category(2, "Travel", CategoryIcon.PERSON, "#00FF00"),
-        Category(3, "Shopping", CategoryIcon.HOME, "#0000FF"),
-        Category(4, "Entertainment", CategoryIcon.SETTINGS, "#FFFF00"),
-        Category(5, "Other", CategoryIcon.SHOPPING, "#FF00FF"),
-        Category(6, "Food", CategoryIcon.ADD, "#FF0000"),
-        Category(7, "Travel", CategoryIcon.PERSON, "#00FF00")
+        Category(1, "Food", CategoryIcon.ADD, "#D3D3D3"),
+        Category(2, "Travel", CategoryIcon.PERSON, "#ADD8E6"),
+        Category(3, "Shopping", CategoryIcon.HOME, "#90EE90"),
+        Category(4, "Entertainment", CategoryIcon.SETTINGS, "#FFA07A"),
+        Category(5, "Other", CategoryIcon.SHOPPING, "#FFB6C1"),
+        Category(6, "Food", CategoryIcon.ADD, "#E6E6FA"),
+        Category(7, "Travel", CategoryIcon.PERSON, "#FFDAB9")
     )
     return categories
 }
