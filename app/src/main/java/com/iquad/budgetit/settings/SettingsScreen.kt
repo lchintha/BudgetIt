@@ -81,11 +81,7 @@ fun SettingsScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
             }
-            VersionSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-            )
+            VersionSection()
         }
     }
 }
@@ -93,11 +89,7 @@ fun SettingsScreen(navController: NavController) {
 @Composable
 fun Preferences() {
     TitleText(
-        title = stringResource(R.string.preferences),
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Gray,
-            fontSize = 14.sp
-        )
+        title = stringResource(R.string.preferences)
     )
     Spacer(modifier = Modifier.height(8.dp))
     AppearanceSection()
@@ -109,11 +101,7 @@ fun Preferences() {
 fun ShareAndSupportSection() {
     Column {
         TitleText(
-            title = stringResource(R.string.share_and_support),
-            style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
+            title = stringResource(R.string.share_and_support)
         )
         Spacer(modifier = Modifier.height(8.dp))
         ShareAndSupportTab(
@@ -142,11 +130,7 @@ fun ShareAndSupportSection() {
 @Composable
 fun LegalSection() {
     TitleText(
-        title = stringResource(R.string.legal),
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Gray,
-            fontSize = 14.sp
-        )
+        title = stringResource(R.string.legal)
     )
     Spacer(modifier = Modifier.height(8.dp))
     Box(
@@ -163,7 +147,7 @@ fun LegalSection() {
                 text = stringResource(R.string.terms_and_conditions),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = colorResource(R.color.colorPrimary),
-                    fontSize = 12.sp
+                    fontSize = 14.sp
                 ),
                 modifier = Modifier
                     .padding(5.dp)
@@ -172,7 +156,7 @@ fun LegalSection() {
                 text = stringResource(R.string.privacy_policy),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = colorResource(R.color.colorPrimary),
-                    fontSize = 12.sp
+                    fontSize = 14.sp
                 ),
                 modifier = Modifier
                     .padding(start = 5.dp, bottom = 5.dp)
@@ -182,17 +166,20 @@ fun LegalSection() {
 }
 
 @Composable
-fun VersionSection(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        modifier = modifier,
-        text = stringResource(R.string.version),
-        style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Gray,
-            fontSize = 10.sp
+fun VersionSection() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.version),
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.Gray,
+                fontSize = 10.sp
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -412,7 +399,9 @@ fun ShareAndSupportTab(
 @Composable
 fun TitleText(
     title: String,
-    style: TextStyle = MaterialTheme.typography.titleMedium
+    style: TextStyle = MaterialTheme.typography.bodyMedium.copy(
+        color = Color.Gray
+    )
 ) {
     Text(
         text = title,
