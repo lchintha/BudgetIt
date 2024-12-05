@@ -61,7 +61,7 @@ fun SettingsScreen(navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
         ) {
             BudgetItToolBar(
                 navController = navController,
@@ -70,7 +70,8 @@ fun SettingsScreen(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .weight(1f),
             ) {
                 Preferences()
                 Spacer(modifier = Modifier.height(16.dp))
@@ -78,12 +79,13 @@ fun SettingsScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 LegalSection()
                 Spacer(modifier = Modifier.height(16.dp))
-                VersionSection(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
+
             }
+            VersionSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
@@ -93,7 +95,8 @@ fun Preferences() {
     TitleText(
         title = stringResource(R.string.preferences),
         style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Gray
+            color = Color.Gray,
+            fontSize = 14.sp
         )
     )
     Spacer(modifier = Modifier.height(8.dp))
@@ -108,7 +111,8 @@ fun ShareAndSupportSection() {
         TitleText(
             title = stringResource(R.string.share_and_support),
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.Gray
+                color = Color.Gray,
+                fontSize = 14.sp
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -140,7 +144,8 @@ fun LegalSection() {
     TitleText(
         title = stringResource(R.string.legal),
         style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Gray
+            color = Color.Gray,
+            fontSize = 14.sp
         )
     )
     Spacer(modifier = Modifier.height(8.dp))
