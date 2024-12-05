@@ -24,7 +24,7 @@ import com.iquad.budgetit.R
 fun BudgetItToolBar(
     navController: NavController,
     title: String,
-    toolbarOption: String
+    toolbarOption: String? = null
 ) {
     Row(
         modifier = Modifier
@@ -46,13 +46,16 @@ fun BudgetItToolBar(
                 fontWeight = FontWeight.Bold
             )
         )
-        Text(
-            text = toolbarOption,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = colorResource(R.color.colorPrimary)
-            ),
-            modifier = Modifier.padding(end = 10.dp)
-        )
+        toolbarOption?.let { toolbarTitle ->
+            Text(
+                text = toolbarTitle,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = colorResource(R.color.colorPrimary)
+                ),
+                modifier = Modifier.padding(end = 10.dp)
+            )
+        }
+
     }
 }
 

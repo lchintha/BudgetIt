@@ -8,3 +8,13 @@ data class Category(
     val icon: CategoryIcon,
     val color: String
 )
+
+enum class AppearanceOption {Light, Dark, System}
+
+enum class Currency(val symbol: String) {
+    USD("$"),
+    EUR("€"),
+    GBP("£"),
+    JPY("¥"),
+    RUP("₹")
+}

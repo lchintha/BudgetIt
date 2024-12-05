@@ -44,11 +44,11 @@ fun HomeScreen(navController: NavController) {
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        HomeScreenToolBar()
+        HomeScreenToolBar(navController)
         Spacer(modifier = Modifier.height(8.dp))
         HalfCircleProgressBar(
-            spentAmount = 5000f,
-            totalAmount = 100f
+            spentAmount = 4506.43f,
+            totalAmount = 8000f
         )
         AddExpenseButton(navController)
         Spacer(modifier = Modifier.height(8.dp))
@@ -57,11 +57,13 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun HomeScreenToolBar() {
+fun HomeScreenToolBar(
+    navController: NavController
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(start = 10.dp, end = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -72,7 +74,7 @@ fun HomeScreenToolBar() {
             )
         )
         IconButton(onClick = {
-            //Navigate to Settings
+            navController.navigate(Screen.SettingsScreen.route)
         }) {
             Icon(
                 imageVector = Icons.Default.Settings,
