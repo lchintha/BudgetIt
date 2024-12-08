@@ -29,16 +29,25 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun InputAmountTextField(
     onValueChange: (String) -> Unit,
+    includeCurrencySymbol: Boolean = true,
+    displayHint: Boolean = true,
+    hint: String = "Enter Amount",
+    size: Int = 36,
+    align: TextAlign = TextAlign.Center,
     modifier: Modifier = Modifier
 ) {
     var amount by remember { mutableStateOf("") }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .padding(0.dp)
+    ) {
         TextField(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth()
+                .padding(0.dp),
             value = amount,
             onValueChange = { input ->
-                val cleanInput = input.removePrefix("$")
+                val cleanInput = if (includeCurrencySymbol) input.removePrefix("$") else input
                 if (cleanInput.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
                     amount = cleanInput
                     onValueChange(cleanInput)
@@ -46,23 +55,24 @@ fun InputAmountTextField(
             },
             placeholder = {
                 Text(
-                    text = "$0",
+                    text = if (includeCurrencySymbol) "$0" else "0",
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.Black,
-                    fontSize = 36.sp,
-                    textAlign = TextAlign.Center
+                    fontSize = size.sp,
+                    textAlign = align
                 )
             },
             textStyle = TextStyle(
-                fontSize = 36.sp,
-                textAlign = TextAlign.Center,
-
-                ),
+                fontSize = size.sp,
+                textAlign = align,
+            ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
-            visualTransformation = CurrencyVisualTransformation(),
+            visualTransformation = CurrencyVisualTransformation(
+                includeCurrencySymbol = includeCurrencySymbol
+            ),
             singleLine = true,
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
@@ -70,39 +80,59 @@ fun InputAmountTextField(
                 unfocusedIndicatorColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 cursorColor = Color.Transparent
-            ),
+            )
         )
-        Text(
-            text = "Enter Amount",
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            fontSize = 12.sp
-        )
+        if (displayHint) {
+            Text(
+                text = hint,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.Gray,
+                textAlign = align,
+                fontSize = 12.sp
+            )
+        }
     }
 }
 
-class CurrencyVisualTransformation : VisualTransformation{
+class CurrencyVisualTransformation(
+    private val includeCurrencySymbol: Boolean = false
+) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val transformedText = if (text.isNotEmpty()) {
-            AnnotatedString("$$text")
+            val updatedText = if (includeCurrencySymbol) "$$text" else "$text"
+            AnnotatedString(updatedText)
         } else {
             text
         }
-        return TransformedText(transformedText, CurrencyOffsetMapping(transformedText))
+        return TransformedText(
+            transformedText,
+            CurrencyOffsetMapping(
+                transformedText,
+                includeCurrencySymbol
+            )
+        )
     }
 }
 
-class CurrencyOffsetMapping(transformedText: AnnotatedString): OffsetMapping{
-    private val text = transformedText.text
+class CurrencyOffsetMapping(
+    private val originalText: AnnotatedString,
+    private val includeCurrencySymbol: Boolean
+) : OffsetMapping {
     override fun originalToTransformed(offset: Int): Int {
-        if(text.isEmpty()) return 0
-        return text.length-1
+        return when {
+            originalText.isEmpty() -> 0
+            !includeCurrencySymbol -> offset
+            else -> offset + 1
+        }
     }
 
     override fun transformedToOriginal(offset: Int): Int {
-        if(text.isEmpty()) return 0
-        return text.length-1
+        return when {
+            originalText.isEmpty() -> 0
+            !includeCurrencySymbol -> offset
+            offset > 0 -> offset - 1
+            else -> 0
+        }
     }
 }
 
@@ -110,6 +140,7 @@ class CurrencyOffsetMapping(transformedText: AnnotatedString): OffsetMapping{
 @Composable
 fun InputAmountTextFieldPreview() {
     InputAmountTextField(
-        onValueChange = {}
+        onValueChange = {},
+        includeCurrencySymbol = false
     )
 }

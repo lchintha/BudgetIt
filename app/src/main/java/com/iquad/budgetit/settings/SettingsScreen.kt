@@ -14,23 +14,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.StarBorder
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +40,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,9 +50,12 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.model.AppearanceOption
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.CurrencyDropdown
+import com.iquad.budgetit.utils.InputAmountTextField
 
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val selectedCurrency = remember { mutableStateOf(Currency.USD) }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -73,13 +73,14 @@ fun SettingsScreen(navController: NavController) {
                     .padding(16.dp)
                     .weight(1f),
             ) {
-                Preferences()
+                Preferences(
+                    selectedCurrency = selectedCurrency
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareAndSupportSection()
                 Spacer(modifier = Modifier.height(16.dp))
                 LegalSection()
                 Spacer(modifier = Modifier.height(16.dp))
-
             }
             VersionSection()
         }
@@ -87,14 +88,18 @@ fun SettingsScreen(navController: NavController) {
 }
 
 @Composable
-fun Preferences() {
+fun Preferences(
+    selectedCurrency: MutableState<Currency>
+) {
     TitleText(
         title = stringResource(R.string.preferences)
     )
     Spacer(modifier = Modifier.height(8.dp))
     AppearanceSection()
     Spacer(modifier = Modifier.height(8.dp))
-    MonthlyBudgetSection()
+    MonthlyBudgetSection(
+        selectedCurrency = selectedCurrency
+    )
 }
 
 @Composable
@@ -151,6 +156,7 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(5.dp)
+                    .clickable {  }
             )
             Text(
                 text = stringResource(R.string.privacy_policy),
@@ -160,6 +166,7 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(start = 5.dp, bottom = 5.dp)
+                    .clickable {  }
             )
         }
     }
@@ -210,7 +217,9 @@ fun AppearanceSection() {
 }
 
 @Composable
-fun MonthlyBudgetSection() {
+fun MonthlyBudgetSection(
+    selectedCurrency: MutableState<Currency>
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -229,10 +238,22 @@ fun MonthlyBudgetSection() {
                     color = Color.Black
                 )
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                CurrencyDropdown()
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                CurrencyDropdown(
+                    selectedCurrency = selectedCurrency
+                )
                 Spacer(modifier = Modifier.width(8.dp))
+                InputAmountTextField(
+                    onValueChange = {},
+                    displayHint = false,
+                    includeCurrencySymbol = false,
+                    size = 16,
+                    align = TextAlign.Start
+                )
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -240,8 +261,7 @@ fun MonthlyBudgetSection() {
 }
 
 @Composable
-fun AppearanceOptionsList(
-) {
+fun AppearanceOptionsList() {
     var selectedOption by remember { mutableStateOf(AppearanceOption.Light) }
     Column(
         modifier = Modifier
@@ -294,55 +314,6 @@ fun AppearanceOptionItem(
             ),
             color = if (isSelected) Color.White else Color.Black
         )
-    }
-}
-
-@Composable
-fun CurrencyDropdown() {
-    val isDropDownExpanded = remember { mutableStateOf(false) }
-    val selectedItem = remember { mutableStateOf(Currency.USD.symbol) }
-    val items = Currency.entries
-
-    Column(
-        modifier = Modifier.wrapContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
-                    isDropDownExpanded.value = true
-                }
-            ) {
-                Text(text = selectedItem.value)
-                Icon(
-                    imageVector = if (isDropDownExpanded.value) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                    contentDescription = "DropDown Icon"
-                )
-            }
-            DropdownMenu(
-                expanded = isDropDownExpanded.value,
-                onDismissRequest = {
-                    isDropDownExpanded.value = false
-                }) {
-                items.forEachIndexed { _, item ->
-                    DropdownMenuItem(text = {
-                        Text(text = item.symbol)
-                    },
-                        onClick = {
-                            isDropDownExpanded.value = false
-                            selectedItem.value = item.symbol
-                        }
-                    )
-                }
-            }
-        }
     }
 }
 
