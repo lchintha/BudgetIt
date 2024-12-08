@@ -52,7 +52,11 @@ fun HomeScreen(navController: NavController) {
         )
         AddExpenseButton(navController)
         Spacer(modifier = Modifier.height(8.dp))
-        RecentExpenses()
+        RecentExpenses(
+            onClickListener = {
+                navController.navigate(Screen.AllExpensesScreen.route)
+            }
+        )
     }
 }
 
@@ -143,7 +147,9 @@ fun AddExpenseButton(navController: NavController) {
 }
 
 @Composable
-fun RecentExpenses() {
+fun RecentExpenses(
+    onClickListener: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -164,7 +170,11 @@ fun RecentExpenses() {
                 text = stringResource(R.string.all),
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = colorResource(R.color.colorPrimary)
-                )
+                ),
+                modifier = Modifier
+                    .clickable {
+                        onClickListener.invoke()
+                    }
             )
         }
     }
