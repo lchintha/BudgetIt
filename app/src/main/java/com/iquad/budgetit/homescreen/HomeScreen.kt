@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -36,6 +38,8 @@ import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
+import com.iquad.budgetit.expenses.ExpenseItem
+import com.iquad.budgetit.expenses.getListOfExpenses
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -150,6 +154,8 @@ fun AddExpenseButton(navController: NavController) {
 fun RecentExpenses(
     onClickListener: () -> Unit = {}
 ) {
+    val expenses = getListOfExpenses().take(3)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,7 +181,18 @@ fun RecentExpenses(
                     .clickable {
                         onClickListener.invoke()
                     }
+                    .padding(4.dp)
             )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(expenses) { expense ->
+                ExpenseItem(expense)
+            }
         }
     }
 }

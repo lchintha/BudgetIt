@@ -60,11 +60,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.Screen
+import com.iquad.budgetit.model.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.InputAmountTextField
 import com.iquad.budgetit.utils.RegularTextField
-import com.iquad.budgetit.model.Category
-import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.toComposeColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -88,7 +89,10 @@ fun AddExpenseScreen(navController: NavController) {
             BudgetItToolBar(
                 navController = navController,
                 title = stringResource(R.string.add_expense),
-                toolbarOption = stringResource(R.string.save)
+                toolbarOption = stringResource(R.string.save),
+                onItemClick = {
+                    navController.navigate(Screen.AddCategory.route)
+                }
             )
             Column(
                 modifier = Modifier
@@ -356,13 +360,13 @@ fun AddExpenseScreenPreview() {
 
 fun getCategories(): List<Category> {
     val categories = listOf(
-        Category(1, "Food", CategoryIcon.ADD, "#D3D3D3"),
-        Category(2, "Travel", CategoryIcon.PERSON, "#ADD8E6"),
-        Category(3, "Shopping", CategoryIcon.HOME, "#90EE90"),
-        Category(4, "Entertainment", CategoryIcon.SETTINGS, "#FFA07A"),
-        Category(5, "Other", CategoryIcon.SHOPPING, "#FFB6C1"),
-        Category(6, "Food", CategoryIcon.ADD, "#E6E6FA"),
-        Category(7, "Travel", CategoryIcon.PERSON, "#FFDAB9")
+        Category(1, "Food", CategoryIcon.RESTAURANTS, "#D3D3D3"),
+        Category(2, "Travel", CategoryIcon.BOOKS, "#ADD8E6"),
+        Category(3, "Shopping", CategoryIcon.GROCERY, "#90EE90"),
+        Category(4, "Entertainment", CategoryIcon.ENTERTAINMENT, "#FFA07A"),
+        Category(5, "Other", CategoryIcon.VACATION, "#FFB6C1"),
+        Category(6, "Food", CategoryIcon.RESTAURANTS, "#E6E6FA"),
+        Category(7, "Travel", CategoryIcon.CLEANING_SUPPLIES, "#FFDAB9")
     )
     return categories
 }

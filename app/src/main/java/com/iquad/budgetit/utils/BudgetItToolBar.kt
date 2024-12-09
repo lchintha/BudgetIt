@@ -1,5 +1,6 @@
 package com.iquad.budgetit.utils
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +25,8 @@ import com.iquad.budgetit.R
 fun BudgetItToolBar(
     navController: NavController,
     title: String,
-    toolbarOption: String? = null
+    toolbarOption: String? = null,
+    onItemClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -53,6 +55,9 @@ fun BudgetItToolBar(
                     color = colorResource(R.color.colorPrimary)
                 ),
                 modifier = Modifier.padding(end = 10.dp)
+                    .clickable {
+                        onItemClick.invoke()
+                    }
             )
         }
 

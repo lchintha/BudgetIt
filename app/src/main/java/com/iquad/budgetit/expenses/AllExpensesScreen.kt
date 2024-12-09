@@ -46,7 +46,6 @@ fun AllExpensesScreen(
 ) {
     val expenses = getListOfExpenses().toMutableList()
     expenses.addAll(getListOfExpenses())
-    expenses.addAll(getListOfExpenses())
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -161,7 +160,7 @@ fun getListOfExpenses(): List<Expense> {
             category = Category(
                 id = 1,
                 name = "Food",
-                icon = CategoryIcon.PERSON,
+                icon = CategoryIcon.RESTAURANTS,
                 color = "#D3D3D3"
             ),
         ),
@@ -173,7 +172,7 @@ fun getListOfExpenses(): List<Expense> {
             category = Category(
                 id = 1,
                 name = "Food",
-                icon = CategoryIcon.HOME,
+                icon = CategoryIcon.VACATION,
                 color = "#FFB6C1"
             ),
         ),
@@ -185,7 +184,7 @@ fun getListOfExpenses(): List<Expense> {
             category = Category(
                 id = 1,
                 name = "Food",
-                icon = CategoryIcon.SETTINGS,
+                icon = CategoryIcon.GROCERY,
                 color = "#FFDAB9"
             ),
         ),
@@ -197,7 +196,7 @@ fun getListOfExpenses(): List<Expense> {
             category = Category(
                 id = 1,
                 name = "Food",
-                icon = CategoryIcon.SHOPPING,
+                icon = CategoryIcon.EDUCATION,
                 color = "#ADD8E6"
             ),
         )
