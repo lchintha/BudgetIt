@@ -52,7 +52,7 @@ fun AddCategory(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 56.dp)
+                .padding(bottom = 10.dp)
         ) {
             BudgetItToolBar(
                 navController = navController,
@@ -161,7 +161,7 @@ fun ColorItem(
             .aspectRatio(1f)
             .size(48.dp)
             .clip(CircleShape)
-            .background(color.color.toComposeColor())
+            .background(color.hex.toComposeColor())
             .border(
                 width = 3.dp,
                 color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,

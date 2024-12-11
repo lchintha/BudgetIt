@@ -92,7 +92,7 @@ enum class CategoryIcon(val imageVector: ImageVector) {
     OTHER(Icons.Rounded.MoreHoriz)
 }
 
-enum class CategoryColor(val color: String) {
+enum class CategoryColor(val hex: String) {
     LIGHT_GRAY("#D3D3D3"),
     SILVER("#C0C0C0"),
     GRAY("#808080"),

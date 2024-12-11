@@ -37,6 +37,7 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.model.Category
 import com.iquad.budgetit.model.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.toComposeColor
 
@@ -94,7 +95,7 @@ fun ExpenseItem(
                 modifier = Modifier
                     .size(45.dp)
                     .clip(CircleShape)
-                    .background(expense.category.color.toComposeColor())
+                    .background(expense.category.color.hex.toComposeColor())
                     .border(
                         width = 3.dp,
                         color = Color.Transparent,
@@ -161,7 +162,7 @@ fun getListOfExpenses(): List<Expense> {
                 id = 1,
                 name = "Food",
                 icon = CategoryIcon.RESTAURANTS,
-                color = "#D3D3D3"
+                color = CategoryColor.GOLDENROD
             ),
         ),
         Expense(
@@ -173,7 +174,7 @@ fun getListOfExpenses(): List<Expense> {
                 id = 1,
                 name = "Food",
                 icon = CategoryIcon.VACATION,
-                color = "#FFB6C1"
+                color = CategoryColor.PINK
             ),
         ),
         Expense(
@@ -185,7 +186,7 @@ fun getListOfExpenses(): List<Expense> {
                 id = 1,
                 name = "Food",
                 icon = CategoryIcon.GROCERY,
-                color = "#FFDAB9"
+                color = CategoryColor.SKY_BLUE
             ),
         ),
         Expense(
@@ -197,7 +198,7 @@ fun getListOfExpenses(): List<Expense> {
                 id = 1,
                 name = "Food",
                 icon = CategoryIcon.EDUCATION,
-                color = "#ADD8E6"
+                color = CategoryColor.CORNFLOWER_BLUE
             ),
         )
     )

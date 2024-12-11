@@ -63,6 +63,7 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.InputAmountTextField
 import com.iquad.budgetit.utils.RegularTextField
@@ -271,7 +272,7 @@ fun CategoryItem(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(category.color.toComposeColor())
+                    .background(category.color.hex.toComposeColor())
                     .border(
                         width = 3.dp,
                         color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,
@@ -360,13 +361,13 @@ fun AddExpenseScreenPreview() {
 
 fun getCategories(): List<Category> {
     val categories = listOf(
-        Category(1, "Food", CategoryIcon.RESTAURANTS, "#D3D3D3"),
-        Category(2, "Travel", CategoryIcon.BOOKS, "#ADD8E6"),
-        Category(3, "Shopping", CategoryIcon.GROCERY, "#90EE90"),
-        Category(4, "Entertainment", CategoryIcon.ENTERTAINMENT, "#FFA07A"),
-        Category(5, "Other", CategoryIcon.VACATION, "#FFB6C1"),
-        Category(6, "Food", CategoryIcon.RESTAURANTS, "#E6E6FA"),
-        Category(7, "Travel", CategoryIcon.CLEANING_SUPPLIES, "#FFDAB9")
+        Category(1, "Food", CategoryIcon.RESTAURANTS, CategoryColor.SKY_BLUE),
+        Category(2, "Travel", CategoryIcon.BOOKS, CategoryColor.GOLDENROD),
+        Category(3, "Shopping", CategoryIcon.GROCERY, CategoryColor.CORAL),
+        Category(4, "Entertainment", CategoryIcon.ENTERTAINMENT, CategoryColor.PALE_VIOLET_RED),
+        Category(5, "Other", CategoryIcon.VACATION, CategoryColor.MINT_CREAM),
+        Category(6, "Food", CategoryIcon.RESTAURANTS, CategoryColor.LIGHT_BLUE),
+        Category(7, "Travel", CategoryIcon.CLEANING_SUPPLIES, CategoryColor.LIGHT_GREEN)
     )
     return categories
 }
