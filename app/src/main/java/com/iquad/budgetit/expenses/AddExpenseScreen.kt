@@ -78,6 +78,7 @@ fun AddExpenseScreen(navController: NavController) {
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isEditable by remember { mutableStateOf(false) }
+    val budgetAmount = remember { mutableStateOf("0") }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -101,7 +102,10 @@ fun AddExpenseScreen(navController: NavController) {
                     .weight(1f)
             ) {
                 InputAmountTextField(
-                    onValueChange = {}
+                    onValueChange = {
+                        budgetAmount.value = it
+                    },
+                    defaultAmount = budgetAmount
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 RegularTextField(

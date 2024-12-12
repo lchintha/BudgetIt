@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +42,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.model.AppearanceOption
 import com.iquad.budgetit.model.Currency
@@ -54,8 +54,14 @@ import com.iquad.budgetit.utils.CurrencyDropdown
 import com.iquad.budgetit.utils.InputAmountTextField
 
 @Composable
-fun SettingsScreen(navController: NavController) {
-    val selectedCurrency = remember { mutableStateOf(Currency.USD) }
+fun SettingsScreen(
+    navController: NavController
+) {
+    val settingsViewModel: SettingsViewModel = viewModel()
+    val budget = settingsViewModel.budget.collectAsState(initial = null)
+    val selectedCurrency = remember { mutableStateOf(budget.value?.currency ?: Currency.USD) }
+    val selectedAmount = remember { mutableStateOf(budget.value?.amount?.toString() ?: "0") }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -74,7 +80,8 @@ fun SettingsScreen(navController: NavController) {
                     .weight(1f),
             ) {
                 Preferences(
-                    selectedCurrency = selectedCurrency
+                    selectedCurrency = selectedCurrency,
+                    selectedAmount = selectedAmount
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareAndSupportSection()
@@ -89,7 +96,8 @@ fun SettingsScreen(navController: NavController) {
 
 @Composable
 fun Preferences(
-    selectedCurrency: MutableState<Currency>
+    selectedCurrency: MutableState<Currency>,
+    selectedAmount: MutableState<String>
 ) {
     TitleText(
         title = stringResource(R.string.preferences)
@@ -98,7 +106,8 @@ fun Preferences(
     AppearanceSection()
     Spacer(modifier = Modifier.height(8.dp))
     MonthlyBudgetSection(
-        selectedCurrency = selectedCurrency
+        selectedCurrency = selectedCurrency,
+        selectedAmount = selectedAmount
     )
 }
 
@@ -218,7 +227,8 @@ fun AppearanceSection() {
 
 @Composable
 fun MonthlyBudgetSection(
-    selectedCurrency: MutableState<Currency>
+    selectedCurrency: MutableState<Currency>,
+    selectedAmount: MutableState<String>
 ) {
     Box(
         modifier = Modifier
@@ -248,7 +258,10 @@ fun MonthlyBudgetSection(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 InputAmountTextField(
-                    onValueChange = {},
+                    onValueChange = {
+                        selectedAmount.value = it
+                    },
+                    defaultAmount = selectedAmount,
                     displayHint = false,
                     includeCurrencySymbol = false,
                     size = 16,
@@ -380,8 +393,9 @@ fun TitleText(
     )
 }
 
+/*
 @Preview
 @Composable
 fun SettingsScreenPreview() {
     SettingsScreen(navController = rememberNavController())
-}
+}*/

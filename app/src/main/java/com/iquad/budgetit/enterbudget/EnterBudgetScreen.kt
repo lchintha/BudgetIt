@@ -16,10 +16,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,18 +28,29 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Currency
+import com.iquad.budgetit.storage.AppDao
 import com.iquad.budgetit.utils.CurrencyDropdown
+import com.iquad.budgetit.utils.GlobalStaticMessage
 import com.iquad.budgetit.utils.InputAmountTextField
+import com.iquad.budgetit.utils.MessageType
 
 @Composable
-fun EnterBudgetScreen(navController: NavController) {
+fun EnterBudgetScreen(
+    navController: NavController,
+    dao: AppDao
+) {
+    val viewModel: WelcomeViewModel = viewModel()
+    val uiState by viewModel.uiState.observeAsState()
+
+    val budgetAmount = remember { mutableStateOf("0") }
+    val selectedCurrency = remember { mutableStateOf(Currency.USD) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,14 +83,21 @@ fun EnterBudgetScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(48.dp))
 
                 // Budget Input Section
-                BudgetInputField()
+                BudgetInputField(
+                    budgetInput = budgetAmount,
+                    selectedCurrency = selectedCurrency
+                )
             }
         }
 
         // Continue Button
         Button(
             onClick = {
-                navController.navigate(Screen.HomeScreen.route)
+                viewModel.processBudget(
+                    appDao = dao,
+                    selectedCurrency.value,
+                    budgetAmount.value.toDouble()
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,12 +114,31 @@ fun EnterBudgetScreen(navController: NavController) {
             )
         }
     }
+
+    uiState?.let {
+        when (uiState) {
+            is WelcomeViewModel.UiState.Success -> {
+                navController.navigate(Screen.HomeScreen.route)
+            }
+
+            WelcomeViewModel.UiState.Error -> {
+                GlobalStaticMessage.show(
+                    context = navController.context,
+                    title = "Enter Budget",
+                    messageType = MessageType.FAILURE
+                )
+            }
+
+            else -> {}
+        }
+    }
 }
 
 @Composable
-fun BudgetInputField() {
-    var budgetInput by remember { mutableStateOf("") }
-    val selectedCurrency = remember { mutableStateOf(Currency.USD) }
+fun BudgetInputField(
+    budgetInput: MutableState<String>,
+    selectedCurrency: MutableState<Currency>
+) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -135,8 +173,9 @@ fun BudgetInputField() {
             ) {
                 InputAmountTextField(
                     onValueChange = {
-                        budgetInput = it
+                        budgetInput.value = it
                     },
+                    defaultAmount = budgetInput,
                     displayHint = false,
                     includeCurrencySymbol = false,
                     align = TextAlign.Start
@@ -153,8 +192,11 @@ fun BudgetInputField() {
 }
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun EnterBudgetScreenPreview() {
-    EnterBudgetScreen(navController = rememberNavController())
-}
+    EnterBudgetScreen(
+        navController = rememberNavController(),
+        dao = AppDatabase.getDatabase(this).appDao()
+    )
+}*/
