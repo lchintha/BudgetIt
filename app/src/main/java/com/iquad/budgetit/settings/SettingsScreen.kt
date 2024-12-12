@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.model.AppearanceOption
@@ -52,15 +51,17 @@ import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CurrencyDropdown
 import com.iquad.budgetit.utils.InputAmountTextField
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
 fun SettingsScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: BudgetItViewModel
 ) {
-    val settingsViewModel: SettingsViewModel = viewModel()
-    val budget = settingsViewModel.budget.collectAsState(initial = null)
-    val selectedCurrency = remember { mutableStateOf(budget.value?.currency ?: Currency.USD) }
-    val selectedAmount = remember { mutableStateOf(budget.value?.amount?.toString() ?: "0") }
+
+    val budget by viewModel.budgetState.collectAsState()
+    val selectedCurrency = remember { mutableStateOf(budget?.currency ?: Currency.USD) }
+    val selectedAmount = remember { mutableStateOf(budget?.amount?.toString() ?: "0") }
 
     Box(
         modifier = Modifier.fillMaxSize()

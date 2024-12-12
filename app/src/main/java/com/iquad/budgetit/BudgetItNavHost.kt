@@ -13,13 +13,13 @@ import com.iquad.budgetit.expenses.AddExpenseScreen
 import com.iquad.budgetit.expenses.AllExpensesScreen
 import com.iquad.budgetit.homescreen.HomeScreen
 import com.iquad.budgetit.settings.SettingsScreen
-import com.iquad.budgetit.storage.AppDao
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
 fun BudgetItNavHost(
     innerPadding: PaddingValues,
     startDestination: String = Screen.EnterBudget.route,
-    dao: AppDao
+    viewModel: BudgetItViewModel
 ) {
     val navController = rememberNavController()
     NavHost(
@@ -30,7 +30,7 @@ fun BudgetItNavHost(
         composable(route = Screen.EnterBudget.route) {
             EnterBudgetScreen(
                 navController,
-                dao
+                viewModel
             )
         }
         composable(route = Screen.HomeScreen.route) {
@@ -41,7 +41,8 @@ fun BudgetItNavHost(
         }
         composable(route = Screen.SettingsScreen.route) {
             SettingsScreen(
-                navController
+                navController,
+                viewModel
             )
         }
         composable(route = Screen.AllExpensesScreen.route) {

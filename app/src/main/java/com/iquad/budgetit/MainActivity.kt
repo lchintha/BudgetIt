@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.iquad.budgetit.storage.AppDatabase
+import com.iquad.budgetit.storage.BudgetItRepository
 import com.iquad.budgetit.storage.PreferencesManager
 import com.iquad.budgetit.ui.theme.BudgetItTheme
 import com.iquad.budgetit.utils.GlobalStaticMessage
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,12 +27,16 @@ class MainActivity : ComponentActivity() {
                     } else {
                         Screen.HomeScreen.route
                     }
+
                     val appDatabase = AppDatabase.getDatabase(this)
                     val appDao = appDatabase.appDao()
+                    val appRepository = BudgetItRepository(appDao)
+                    val viewModel = BudgetItViewModel(appRepository)
+
                     BudgetItNavHost(
                         innerPadding = innerPadding,
                         startDestination = startDestination,
-                        dao = appDao
+                        viewModel = viewModel
                     )
                     GlobalStaticMessage.Display()
                 }

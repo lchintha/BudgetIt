@@ -29,26 +29,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Currency
-import com.iquad.budgetit.storage.AppDao
 import com.iquad.budgetit.utils.CurrencyDropdown
 import com.iquad.budgetit.utils.GlobalStaticMessage
 import com.iquad.budgetit.utils.InputAmountTextField
 import com.iquad.budgetit.utils.MessageType
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
 fun EnterBudgetScreen(
     navController: NavController,
-    dao: AppDao
+    viewModel: BudgetItViewModel
 ) {
-    val viewModel: WelcomeViewModel = viewModel()
     val uiState by viewModel.uiState.observeAsState()
 
-    val budgetAmount = remember { mutableStateOf("0") }
+    val budgetAmount = remember { mutableStateOf("") }
     val selectedCurrency = remember { mutableStateOf(Currency.USD) }
 
     Column(
@@ -94,9 +92,9 @@ fun EnterBudgetScreen(
         Button(
             onClick = {
                 viewModel.processBudget(
-                    appDao = dao,
+                    navController.context,
                     selectedCurrency.value,
-                    budgetAmount.value.toDouble()
+                    if(budgetAmount.value.isEmpty()) 0.0 else budgetAmount.value.toDouble()
                 )
             },
             modifier = Modifier
@@ -117,11 +115,15 @@ fun EnterBudgetScreen(
 
     uiState?.let {
         when (uiState) {
-            is WelcomeViewModel.UiState.Success -> {
-                navController.navigate(Screen.HomeScreen.route)
+            is BudgetItViewModel.UiState.Success -> {
+                navController.navigate(Screen.HomeScreen.route) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
+                }
             }
 
-            WelcomeViewModel.UiState.Error -> {
+            BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
                     context = navController.context,
                     title = "Enter Budget",
@@ -190,13 +192,3 @@ fun BudgetInputField(
         )
     }
 }
-
-
-/*@Preview(showBackground = true)
-@Composable
-fun EnterBudgetScreenPreview() {
-    EnterBudgetScreen(
-        navController = rememberNavController(),
-        dao = AppDatabase.getDatabase(this).appDao()
-    )
-}*/
