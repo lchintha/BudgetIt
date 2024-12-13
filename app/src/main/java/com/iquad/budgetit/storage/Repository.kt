@@ -14,4 +14,22 @@ class BudgetItRepository(private val appDao: AppDao) {
         appDao.updateBudget(budget)
     }
 
+    val categories: Flow<List<Category>> = appDao.getCategories()
+
+    suspend fun insertCategory(category: Category) {
+        appDao.insertCategory(category)
+    }
+
+    suspend fun getCategoryCount(): Int {
+        return appDao.getCategoryCount()
+    }
+
+    suspend fun insertCategories(categories: List<Category>) {
+        appDao.insertCategories(categories)
+    }
+
+    suspend fun deleteCategory(category: Category) {
+        appDao.deleteCategory(category)
+    }
+
 }

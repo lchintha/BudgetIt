@@ -42,6 +42,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,31 +55,35 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
-import com.iquad.budgetit.model.Category
+import com.iquad.budgetit.storage.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
-import com.iquad.budgetit.utils.CategoryColor
-import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.InputAmountTextField
 import com.iquad.budgetit.utils.RegularTextField
 import com.iquad.budgetit.utils.toComposeColor
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddExpenseScreen(navController: NavController) {
+fun AddExpenseScreen(
+    navController: NavController,
+    viewModel: BudgetItViewModel
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.getCategories()
+    }
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isEditable by remember { mutableStateOf(false) }
     val budgetAmount = remember { mutableStateOf("0") }
+    val categories by viewModel.categories.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -123,9 +128,10 @@ fun AddExpenseScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(modifier = Modifier.weight(1f)) {
                     CategoriesList(
-                        getCategories(),
+                        categories,
                         onCategorySelected = {},
-                        isEditMode = isEditable
+                        isEditMode = isEditable,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -207,7 +213,8 @@ fun CategoriesTitle(
 fun CategoriesList(
     categories: List<Category>,
     onCategorySelected: () -> Unit,
-    isEditMode: Boolean
+    isEditMode: Boolean,
+    viewModel: BudgetItViewModel
 ) {
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     Column(
@@ -229,7 +236,7 @@ fun CategoriesList(
                         onCategorySelected()
                     },
                     isEditMode = isEditMode,
-                    onDeleteCategory = {}
+                    viewModel = viewModel
                 )
             }
         }
@@ -242,7 +249,7 @@ fun CategoryItem(
     isSelected: Boolean,
     onCategoryClick: () -> Unit,
     isEditMode: Boolean,
-    onDeleteCategory: () -> Unit
+    viewModel: BudgetItViewModel
 ) {
     val jiggleAnimation = rememberInfiniteTransition(label = "jiggle")
     val jiggleAngle by jiggleAnimation.animateFloat(
@@ -317,7 +324,7 @@ fun CategoryItem(
                             .background(Color.Red)
                             .padding(4.dp)
                             .clickable {
-                                onDeleteCategory.invoke()
+                                viewModel.deleteCategory(category)
                             }
                     )
                 }
@@ -332,7 +339,6 @@ fun CategoryItem(
             modifier = Modifier.fillMaxWidth()
         )
     }
-
 }
 
 @Composable
@@ -355,23 +361,4 @@ fun CalendarButton(
             style = MaterialTheme.typography.bodyLarge
         )
     }
-}
-
-@Preview
-@Composable
-fun AddExpenseScreenPreview() {
-    AddExpenseScreen(rememberNavController())
-}
-
-fun getCategories(): List<Category> {
-    val categories = listOf(
-        Category(1, "Food", CategoryIcon.RESTAURANTS, CategoryColor.SKY_BLUE),
-        Category(2, "Travel", CategoryIcon.BOOKS, CategoryColor.GOLDENROD),
-        Category(3, "Shopping", CategoryIcon.GROCERY, CategoryColor.CORAL),
-        Category(4, "Entertainment", CategoryIcon.ENTERTAINMENT, CategoryColor.PALE_VIOLET_RED),
-        Category(5, "Other", CategoryIcon.VACATION, CategoryColor.MINT_CREAM),
-        Category(6, "Food", CategoryIcon.RESTAURANTS, CategoryColor.LIGHT_BLUE),
-        Category(7, "Travel", CategoryIcon.CLEANING_SUPPLIES, CategoryColor.LIGHT_GREEN)
-    )
-    return categories
 }

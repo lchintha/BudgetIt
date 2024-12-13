@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
-import com.iquad.budgetit.model.Category
 import com.iquad.budgetit.model.Expense
+import com.iquad.budgetit.storage.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon

@@ -37,7 +37,10 @@ fun BudgetItNavHost(
             HomeScreen(navController)
         }
         composable(route = Screen.AddExpenseScreen.route) {
-            AddExpenseScreen(navController)
+            AddExpenseScreen(
+                navController,
+                viewModel
+            )
         }
         composable(route = Screen.SettingsScreen.route) {
             SettingsScreen(
@@ -49,7 +52,10 @@ fun BudgetItNavHost(
             AllExpensesScreen(navController)
         }
         composable(route = Screen.AddCategory.route) {
-            AddCategory(navController)
+            AddCategory(
+                navController,
+                viewModel
+            )
         }
     }
 }

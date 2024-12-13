@@ -20,32 +20,40 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.settings.TitleText
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon
+import com.iquad.budgetit.utils.GlobalStaticMessage
+import com.iquad.budgetit.utils.MessageType
 import com.iquad.budgetit.utils.RegularTextField
 import com.iquad.budgetit.utils.toComposeColor
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
 fun AddCategory(
-    navController: NavController
+    navController: NavController,
+    viewModel: BudgetItViewModel
 ) {
+    val categoryName = remember { mutableStateOf("") }
+    val selectedColor = remember { mutableStateOf<CategoryColor?>(null) }
+    val selectedIcon = remember { mutableStateOf<CategoryIcon?>(null) }
+    val uiState by viewModel.uiState.observeAsState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -57,25 +65,50 @@ fun AddCategory(
             BudgetItToolBar(
                 navController = navController,
                 title = stringResource(R.string.add_category),
-                toolbarOption = stringResource(R.string.save)
+                toolbarOption = stringResource(R.string.save),
+                onItemClick = {
+                    viewModel.addCategory(
+                        categoryName.value,
+                        selectedColor.value,
+                        selectedIcon.value
+                    )
+                }
             )
             Column(
                 modifier = Modifier
                     .padding(12.dp)
                     .weight(1f)
             ) {
-                CategoryNameSection()
+                CategoryNameSection(categoryName)
                 Spacer(modifier = Modifier.height(16.dp))
-                ColorsList()
+                ColorsList(selectedColor)
                 Spacer(modifier = Modifier.height(16.dp))
-                IconsList()
+                IconsList(selectedIcon)
             }
+        }
+    }
+
+    uiState?.let {
+        when(uiState) {
+            is BudgetItViewModel.UiState.Error -> {
+                GlobalStaticMessage.show(
+                    context = navController.context,
+                    title = "Select All Fields",
+                    messageType = MessageType.FAILURE
+                )
+            }
+            BudgetItViewModel.UiState.Success -> {
+                navController.popBackStack()
+            }
+            else -> {}
         }
     }
 }
 
 @Composable
-fun CategoryNameSection() {
+fun CategoryNameSection(
+    categoryName: MutableState<String>
+) {
     TitleText(
         title = stringResource(R.string.category_name),
         style = MaterialTheme.typography.titleMedium.copy(
@@ -84,7 +117,9 @@ fun CategoryNameSection() {
     )
     Spacer(modifier = Modifier.height(8.dp))
     RegularTextField(
-        onValueChange = {},
+        onValueChange = {
+            categoryName.value = it
+        },
         placeholder = stringResource(R.string.category_name),
         modifier = Modifier
             .fillMaxWidth()
@@ -92,8 +127,9 @@ fun CategoryNameSection() {
 }
 
 @Composable
-fun ColorsList() {
-    var selectedColor by remember { mutableStateOf<CategoryColor?>(null) }
+fun ColorsList(
+    selectedColor: MutableState<CategoryColor?>
+) {
     TitleText(
         title = stringResource(R.string.color),
         style = MaterialTheme.typography.titleMedium.copy(
@@ -110,10 +146,9 @@ fun ColorsList() {
         items(CategoryColor.entries.size) { index ->
             ColorItem(
                 color = CategoryColor.entries[index],
-                isSelected = CategoryColor.entries[index] == selectedColor,
+                isSelected = CategoryColor.entries[index] == selectedColor.value,
                 onColorSelected = {
-                    selectedColor = CategoryColor.entries[index]
-                    println("Selected Color: ${selectedColor?.name}")
+                    selectedColor.value = CategoryColor.entries[index]
                 }
             )
         }
@@ -121,8 +156,9 @@ fun ColorsList() {
 }
 
 @Composable
-fun IconsList() {
-    var selectedIcon by remember { mutableStateOf<CategoryIcon?>(null) }
+fun IconsList(
+    selectedIcon: MutableState<CategoryIcon?>
+) {
     TitleText(
         title = stringResource(R.string.icon),
         style = MaterialTheme.typography.titleMedium.copy(
@@ -139,10 +175,9 @@ fun IconsList() {
         items(CategoryIcon.entries.size) { index ->
             IconItem(
                 icon = CategoryIcon.entries[index],
-                isSelected = CategoryIcon.entries[index] == selectedIcon,
+                isSelected = CategoryIcon.entries[index] == selectedIcon.value,
                 onIconSelected = {
-                    selectedIcon = CategoryIcon.entries[index]
-                    println("Selected Icon: ${CategoryIcon.entries[index].name}")
+                    selectedIcon.value = CategoryIcon.entries[index]
                 }
             )
         }
@@ -208,10 +243,4 @@ fun IconItem(
             modifier = Modifier.size(30.dp)
         )
     }
-}
-
-@Preview
-@Composable
-fun AddCategoryPreview() {
-    AddCategory(navController = rememberNavController())
 }

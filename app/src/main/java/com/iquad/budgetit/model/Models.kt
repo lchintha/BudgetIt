@@ -1,14 +1,6 @@
 package com.iquad.budgetit.model
 
-import com.iquad.budgetit.utils.CategoryColor
-import com.iquad.budgetit.utils.CategoryIcon
-
-data class Category(
-    val id: Int,
-    val name: String,
-    val icon: CategoryIcon,
-    val color: CategoryColor
-)
+import com.iquad.budgetit.storage.Category
 
 enum class AppearanceOption {Light, Dark, System}
 
