@@ -11,11 +11,3 @@ enum class Currency(val symbol: String) {
     JPY("¥"),
     RUP("₹")
 }
-
-data class Expense(
-    val id: Int,
-    val title: String,
-    val amount: Double,
-    val date: String,
-    val category: Category
-)

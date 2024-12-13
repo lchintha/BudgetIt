@@ -9,20 +9,25 @@ import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.BudgetEntity
 import com.iquad.budgetit.storage.BudgetItRepository
 import com.iquad.budgetit.storage.Category
+import com.iquad.budgetit.storage.Expense
+import com.iquad.budgetit.storage.ExpenseWithCategoryId
 import com.iquad.budgetit.storage.PreferencesManager
 import com.iquad.budgetit.storage.defaultstorage.CategoryInitializer
 import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon
+import com.iquad.budgetit.utils.toFormattedString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class BudgetItViewModel(
     private val repository: BudgetItRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<UiState>()
+    private val _uiState = MutableLiveData<UiState>(UiState.Idle)
     val uiState: LiveData<UiState> get() = _uiState
 
     private val _budgetState = MutableStateFlow<BudgetEntity?>(null)
@@ -30,6 +35,9 @@ class BudgetItViewModel(
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> get() = _categories
+
+    private val _expenses = MutableStateFlow<List<Expense>>(emptyList())
+    val expenses: StateFlow<List<Expense>> get() = _expenses
 
     init {
         viewModelScope.launch {
@@ -101,8 +109,45 @@ class BudgetItViewModel(
         }
     }
 
+    fun saveExpense(
+        amount: Double,
+        title: String,
+        date: LocalDate,
+        category: Category?
+    ) {
+        viewModelScope.launch {
+            if (amount == 0.0 || title.isEmpty() || category == null) {
+                _uiState.value = UiState.Error
+            } else {
+                repository.insertExpense(
+                    ExpenseWithCategoryId(
+                        title = title,
+                        amount = amount,
+                        date = date.toFormattedString(),
+                        categoryId = category.id,
+                    )
+                )
+                _uiState.value = UiState.Success
+            }
+        }
+    }
+
+    fun getExpensesForCurrentMonth() {
+        viewModelScope.launch {
+            val currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
+            repository.getExpensesByMonth(currentMonth).collect { expenses ->
+                _expenses.value = expenses
+            }
+        }
+    }
+
+    fun resetState(){
+        _uiState.value = UiState.Idle
+    }
+
     sealed class UiState {
         data object Success : UiState()
         data object Error : UiState()
+        data object Idle : UiState()
     }
 }

@@ -21,6 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,19 +37,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
-import com.iquad.budgetit.model.Expense
-import com.iquad.budgetit.storage.Category
+import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
-import com.iquad.budgetit.utils.CategoryColor
-import com.iquad.budgetit.utils.CategoryIcon
 import com.iquad.budgetit.utils.toComposeColor
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
 fun AllExpensesScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: BudgetItViewModel
 ) {
-    val expenses = getListOfExpenses().toMutableList()
-    expenses.addAll(getListOfExpenses())
+    LaunchedEffect(key1 = true) {
+        viewModel.getExpensesForCurrentMonth()
+    }
+    val expenses by viewModel.expenses.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -122,7 +126,7 @@ fun ExpenseItem(
                     .weight(1f)
             ) {
                 Text(
-                    text = expense.title,
+                    text = expense.data.title,
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = MaterialTheme.typography.titleMedium.fontSize
@@ -130,7 +134,7 @@ fun ExpenseItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = expense.date,
+                    text = expense.data.date,
                     style = TextStyle(
                         color = Color.Gray,
                         fontSize = MaterialTheme.typography.bodySmall.fontSize
@@ -139,7 +143,7 @@ fun ExpenseItem(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "$${expense.amount}",
+                text = "$${expense.data.amount}",
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize
@@ -151,7 +155,7 @@ fun ExpenseItem(
     }
 }
 
-fun getListOfExpenses(): List<Expense> {
+/*fun getListOfExpenses(): List<Expense> {
     return listOf(
         Expense(
             id = 1,
@@ -202,10 +206,4 @@ fun getListOfExpenses(): List<Expense> {
             ),
         )
     )
-}
-
-@Preview
-@Composable
-fun AllExpensesScreenPreview() {
-    AllExpensesScreen(navController = rememberNavController())
-}
+}*/

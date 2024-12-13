@@ -42,8 +42,10 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,7 +64,11 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.storage.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.CategoryColor
+import com.iquad.budgetit.utils.CategoryIcon
+import com.iquad.budgetit.utils.GlobalStaticMessage
 import com.iquad.budgetit.utils.InputAmountTextField
+import com.iquad.budgetit.utils.MessageType
 import com.iquad.budgetit.utils.RegularTextField
 import com.iquad.budgetit.utils.toComposeColor
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
@@ -78,12 +84,16 @@ fun AddExpenseScreen(
     LaunchedEffect(key1 = true) {
         viewModel.getCategories()
     }
+    val uiState by viewModel.uiState.observeAsState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var isEditable by remember { mutableStateOf(false) }
-    val budgetAmount = remember { mutableStateOf("0") }
     val categories by viewModel.categories.collectAsState()
+
+    val expenseAmount = remember { mutableStateOf("") }
+    val expenseTitle = remember { mutableStateOf("") }
+    val selectedCategory = remember { mutableStateOf<Category?>(null) }
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -98,7 +108,12 @@ fun AddExpenseScreen(
                 title = stringResource(R.string.add_expense),
                 toolbarOption = stringResource(R.string.save),
                 onItemClick = {
-                    navController.navigate(Screen.AddCategory.route)
+                    viewModel.saveExpense(
+                        amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
+                        title = expenseTitle.value,
+                        date = selectedDate,
+                        category = selectedCategory.value
+                    )
                 }
             )
             Column(
@@ -108,13 +123,15 @@ fun AddExpenseScreen(
             ) {
                 InputAmountTextField(
                     onValueChange = {
-                        budgetAmount.value = it
+                        expenseAmount.value = it
                     },
-                    defaultAmount = budgetAmount
+                    defaultAmount = expenseAmount
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 RegularTextField(
-                    onValueChange = {},
+                    onValueChange = { title ->
+                        expenseTitle.value = title
+                    },
                     placeholder = stringResource(R.string.whats_this_expense_for),
                     modifier = Modifier
                 )
@@ -129,9 +146,10 @@ fun AddExpenseScreen(
                 Box(modifier = Modifier.weight(1f)) {
                     CategoriesList(
                         categories,
-                        onCategorySelected = {},
                         isEditMode = isEditable,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        navController = navController,
+                        selectedCategory = selectedCategory
                     )
                 }
             }
@@ -180,6 +198,24 @@ fun AddExpenseScreen(
             )
         }
     }
+
+    LaunchedEffect(uiState) {
+        when(uiState) {
+            is BudgetItViewModel.UiState.Error -> {
+                GlobalStaticMessage.show(
+                    context = navController.context,
+                    title = "Enter All Fields",
+                    messageType = MessageType.FAILURE
+                )
+                viewModel.resetState()
+            }
+            BudgetItViewModel.UiState.Success -> {
+                navController.popBackStack()
+                viewModel.resetState()
+            }
+            else -> {}
+        }
+    }
 }
 
 @Composable
@@ -212,11 +248,21 @@ fun CategoriesTitle(
 @Composable
 fun CategoriesList(
     categories: List<Category>,
-    onCategorySelected: () -> Unit,
     isEditMode: Boolean,
-    viewModel: BudgetItViewModel
+    viewModel: BudgetItViewModel,
+    navController: NavController,
+    selectedCategory: MutableState<Category?>
 ) {
-    var selectedCategory by remember { mutableStateOf<Category?>(null) }
+    // Create a custom category with a predefined icon and color
+    val customCategory = Category(
+        name = "Custom",
+        icon = CategoryIcon.ADD,
+        color = CategoryColor.LIGHT_GRAY
+    )
+
+    // Combine existing categories with the custom category
+    val allCategories = if (isEditMode) categories else categories + customCategory
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -227,16 +273,22 @@ fun CategoriesList(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(categories) { category ->
+            items(allCategories) { category ->
+                // Check if it's the custom category
+                val isCustomCategory = category.name == "Custom"
                 CategoryItem(
                     category = category,
-                    isSelected = if (!isEditMode) category == selectedCategory else false,
+                    isSelected = if (!isEditMode) category == selectedCategory.value else false,
                     onCategoryClick = {
-                        selectedCategory = category
-                        onCategorySelected()
+                        if(!isCustomCategory) {
+                            selectedCategory.value = category
+                        } else {
+                            navController.navigate(Screen.AddCategory.route)
+                        }
                     },
                     isEditMode = isEditMode,
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    isCustomCategory = isCustomCategory
                 )
             }
         }
@@ -249,7 +301,8 @@ fun CategoryItem(
     isSelected: Boolean,
     onCategoryClick: () -> Unit,
     isEditMode: Boolean,
-    viewModel: BudgetItViewModel
+    viewModel: BudgetItViewModel,
+    isCustomCategory: Boolean
 ) {
     val jiggleAnimation = rememberInfiniteTransition(label = "jiggle")
     val jiggleAngle by jiggleAnimation.animateFloat(
@@ -283,14 +336,19 @@ fun CategoryItem(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape)
-                    .background(category.color.hex.toComposeColor())
+                    .background(
+                        if (isCustomCategory) Color.Transparent
+                        else category.color.hex.toComposeColor()
+                    )
                     .border(
-                        width = 3.dp,
-                        color = if (isSelected) colorResource(R.color.colorPrimary) else Color.Transparent,
+                        width = if (isCustomCategory) 2.dp else 3.dp,
+                        color = if (isCustomCategory) Color.LightGray
+                                else if (isSelected) colorResource(R.color.colorPrimary)
+                                else Color.Transparent,
                         shape = CircleShape
                     )
                     .graphicsLayer {
-                        if (isSelected) {
+                        if (isSelected && !isCustomCategory) {
                             scaleX = 1.2f
                             scaleY = 1.2f
                         } else {
@@ -304,11 +362,11 @@ fun CategoryItem(
                 Icon(
                     imageVector = category.icon.imageVector,
                     contentDescription = category.name,
-                    tint = Color.Black,
+                    tint = if (isCustomCategory) Color.Gray else Color.Black,
                     modifier = Modifier.size(30.dp)
                 )
             }
-            if (isEditMode) {
+            if (isEditMode && !isCustomCategory) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -336,7 +394,8 @@ fun CategoryItem(
             text = category.name,
             fontSize = 12.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            color = if (isCustomCategory) Color.Gray else Color.Unspecified
         )
     }
 }

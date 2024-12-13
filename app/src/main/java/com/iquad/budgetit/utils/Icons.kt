@@ -2,6 +2,7 @@ package com.iquad.budgetit.utils
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.TrendingUp
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.Calculate
 import androidx.compose.material.icons.rounded.CardGiftcard
@@ -89,7 +90,8 @@ enum class CategoryIcon(val imageVector: ImageVector) {
     EVENTS(Icons.Rounded.EventSeat),
 
     // Catch-all
-    OTHER(Icons.Rounded.MoreHoriz)
+    OTHER(Icons.Rounded.MoreHoriz),
+    ADD(Icons.Rounded.Add)
 }
 
 enum class CategoryColor(val hex: String) {

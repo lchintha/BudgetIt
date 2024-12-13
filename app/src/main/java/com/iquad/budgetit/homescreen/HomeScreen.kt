@@ -23,6 +23,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,19 +33,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
 import com.iquad.budgetit.expenses.ExpenseItem
-import com.iquad.budgetit.expenses.getListOfExpenses
+import com.iquad.budgetit.storage.Expense
+import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: BudgetItViewModel
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.getExpensesForCurrentMonth()
+    }
+    val expenses by viewModel.expenses.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,6 +67,7 @@ fun HomeScreen(navController: NavController) {
         AddExpenseButton(navController)
         Spacer(modifier = Modifier.height(8.dp))
         RecentExpenses(
+            allExpenses = expenses,
             onClickListener = {
                 navController.navigate(Screen.AllExpensesScreen.route)
             }
@@ -152,9 +163,10 @@ fun AddExpenseButton(navController: NavController) {
 
 @Composable
 fun RecentExpenses(
-    onClickListener: () -> Unit = {}
+    allExpenses: List<Expense>,
+    onClickListener: () -> Unit = {},
 ) {
-    val expenses = getListOfExpenses().take(3)
+    val expenses = allExpenses.sortedByDescending { it.data.date }.take(3)
 
     Column(
         modifier = Modifier
@@ -195,11 +207,4 @@ fun RecentExpenses(
             }
         }
     }
-}
-
-
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(rememberNavController())
 }

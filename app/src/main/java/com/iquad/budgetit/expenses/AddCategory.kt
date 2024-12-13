@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -88,7 +89,7 @@ fun AddCategory(
         }
     }
 
-    uiState?.let {
+    LaunchedEffect(uiState) {
         when(uiState) {
             is BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
@@ -96,9 +97,11 @@ fun AddCategory(
                     title = "Select All Fields",
                     messageType = MessageType.FAILURE
                 )
+                viewModel.resetState()
             }
             BudgetItViewModel.UiState.Success -> {
                 navController.popBackStack()
+                viewModel.resetState()
             }
             else -> {}
         }
