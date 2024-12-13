@@ -38,6 +38,8 @@ class BudgetItViewModel(
 
     private val _expenses = MutableStateFlow<List<Expense>>(emptyList())
     val expenses: StateFlow<List<Expense>> get() = _expenses
+    private val _totalExpenses = MutableStateFlow(0.0)
+    val totalExpenses: StateFlow<Double> get() = _totalExpenses
 
     init {
         viewModelScope.launch {
@@ -137,6 +139,7 @@ class BudgetItViewModel(
             val currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
             repository.getExpensesByMonth(currentMonth).collect { expenses ->
                 _expenses.value = expenses
+                _totalExpenses.value = expenses.sumOf { it.data.amount }
             }
         }
     }

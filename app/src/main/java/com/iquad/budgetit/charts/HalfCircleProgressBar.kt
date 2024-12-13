@@ -3,8 +3,12 @@ package com.iquad.budgetit.charts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,17 +26,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.iquad.budgetit.R
+import com.iquad.budgetit.model.Currency
 
 @Composable
 fun HalfCircleProgressBar(
-    spentAmount: Float,
-    totalAmount: Float,
+    spentAmount: Double,
+    totalAmount: Double,
     modifier: Modifier = Modifier,
+    currency: Currency = Currency.USD
 ) {
     val backgroundColor: Color = colorResource(R.color.light_blue)
-    val percentage: Float
+    val percentage: Double
     val foregroundColor: Color = if (spentAmount > totalAmount) {
-        percentage = 1f
+        percentage = 1.0
         Color.Red
     } else {
         percentage = spentAmount / totalAmount
@@ -40,7 +46,7 @@ fun HalfCircleProgressBar(
     }
 
     val animatedPercentage by animateFloatAsState(
-        targetValue = percentage,
+        targetValue = percentage.toFloat(),
         animationSpec = tween(durationMillis = 1000),
         label = "progress"
     )
@@ -105,7 +111,7 @@ fun HalfCircleProgressBar(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "$$spentAmount",
+                text = "${currency.symbol}$spentAmount",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
@@ -124,8 +130,8 @@ fun HalfCircleProgressBar(
 @Preview
 @Composable
 fun HalfCircleProgressBarPreview() {
-    val spent = 50f
-    val total = 100f
+    val spent = 50.0
+    val total = 100.0
 
     HalfCircleProgressBar(
         spentAmount = spent,

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
+import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Category
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CategoryColor
@@ -89,6 +90,7 @@ fun AddExpenseScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
     var isEditable by remember { mutableStateOf(false) }
     val categories by viewModel.categories.collectAsState()
+    val budget by viewModel.budgetState.collectAsState()
 
     val expenseAmount = remember { mutableStateOf("") }
     val expenseTitle = remember { mutableStateOf("") }
@@ -125,7 +127,8 @@ fun AddExpenseScreen(
                     onValueChange = {
                         expenseAmount.value = it
                     },
-                    defaultAmount = expenseAmount
+                    defaultAmount = expenseAmount,
+                    currency = budget?.currency ?: Currency.USD
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 RegularTextField(

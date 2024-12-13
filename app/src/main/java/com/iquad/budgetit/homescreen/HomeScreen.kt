@@ -40,6 +40,7 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
 import com.iquad.budgetit.expenses.ExpenseItem
+import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
@@ -52,6 +53,8 @@ fun HomeScreen(
         viewModel.getExpensesForCurrentMonth()
     }
     val expenses by viewModel.expenses.collectAsState()
+    val totalExpenses by viewModel.totalExpenses.collectAsState()
+    val budget by viewModel.budgetState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -61,13 +64,15 @@ fun HomeScreen(
         HomeScreenToolBar(navController)
         Spacer(modifier = Modifier.height(8.dp))
         HalfCircleProgressBar(
-            spentAmount = 4506.43f,
-            totalAmount = 8000f
+            spentAmount = totalExpenses,
+            totalAmount = budget?.amount ?: 1.0,
+            currency = budget?.currency ?: Currency.USD
         )
         AddExpenseButton(navController)
         Spacer(modifier = Modifier.height(8.dp))
         RecentExpenses(
             allExpenses = expenses,
+            currency = budget?.currency ?: Currency.USD,
             onClickListener = {
                 navController.navigate(Screen.AllExpensesScreen.route)
             }
@@ -164,6 +169,7 @@ fun AddExpenseButton(navController: NavController) {
 @Composable
 fun RecentExpenses(
     allExpenses: List<Expense>,
+    currency: Currency,
     onClickListener: () -> Unit = {},
 ) {
     val expenses = allExpenses.sortedByDescending { it.data.date }.take(3)
@@ -203,7 +209,10 @@ fun RecentExpenses(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(expenses) { expense ->
-                ExpenseItem(expense)
+                ExpenseItem(
+                    expense,
+                    currency
+                )
             }
         }
     }

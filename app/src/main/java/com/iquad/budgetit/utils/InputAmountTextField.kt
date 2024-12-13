@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iquad.budgetit.model.Currency
 
 @Composable
 fun InputAmountTextField(
@@ -34,7 +35,8 @@ fun InputAmountTextField(
     hint: String = "Enter Amount",
     size: Int = 36,
     align: TextAlign = TextAlign.Center,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currency: Currency = Currency.USD
 ) {
 
     Column(
@@ -46,7 +48,7 @@ fun InputAmountTextField(
                 .padding(0.dp),
             value = defaultAmount.value,
             onValueChange = { input ->
-                val cleanInput = if (includeCurrencySymbol) input.removePrefix("$") else input
+                val cleanInput = if (includeCurrencySymbol) input.removePrefix(currency.symbol) else input
                 if (cleanInput.matches(Regex("^\\d*\\.?\\d{0,2}\$"))) {
                     defaultAmount.value = cleanInput
                     onValueChange(cleanInput)
@@ -54,7 +56,7 @@ fun InputAmountTextField(
             },
             placeholder = {
                 Text(
-                    text = if (includeCurrencySymbol) "$0" else "0",
+                    text = if (includeCurrencySymbol) "${currency.symbol}0" else "0",
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.Black,
                     fontSize = size.sp,
@@ -70,7 +72,8 @@ fun InputAmountTextField(
                 imeAction = ImeAction.Done
             ),
             visualTransformation = CurrencyVisualTransformation(
-                includeCurrencySymbol = includeCurrencySymbol
+                includeCurrencySymbol = includeCurrencySymbol,
+                currency
             ),
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -94,11 +97,12 @@ fun InputAmountTextField(
 }
 
 class CurrencyVisualTransformation(
-    private val includeCurrencySymbol: Boolean = false
+    private val includeCurrencySymbol: Boolean = false,
+    private val currency: Currency
 ) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val transformedText = if (text.isNotEmpty()) {
-            val updatedText = if (includeCurrencySymbol) "$$text" else "$text"
+            val updatedText = if (includeCurrencySymbol) "${currency.symbol}$text" else "$text"
             AnnotatedString(updatedText)
         } else {
             text

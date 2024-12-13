@@ -32,11 +32,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.toComposeColor
@@ -51,6 +50,7 @@ fun AllExpensesScreen(
         viewModel.getExpensesForCurrentMonth()
     }
     val expenses by viewModel.expenses.collectAsState()
+    val budget by viewModel.budgetState.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -71,7 +71,10 @@ fun AllExpensesScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(expenses) { expense ->
-                        ExpenseItem(expense)
+                        ExpenseItem(
+                            expense,
+                            currency = budget?.currency ?: Currency.USD
+                        )
                     }
                 }
             }
@@ -81,7 +84,8 @@ fun AllExpensesScreen(
 
 @Composable
 fun ExpenseItem(
-    expense: Expense
+    expense: Expense,
+    currency: Currency
 ) {
     Box(
         modifier = Modifier
@@ -143,7 +147,7 @@ fun ExpenseItem(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "$${expense.data.amount}",
+                text = "${currency.symbol}${expense.data.amount}",
                 style = TextStyle(
                     color = Color.Black,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize
@@ -154,56 +158,3 @@ fun ExpenseItem(
         }
     }
 }
-
-/*fun getListOfExpenses(): List<Expense> {
-    return listOf(
-        Expense(
-            id = 1,
-            amount = 97.56,
-            date = "13 Nov 2024",
-            title = "Amazon",
-            category = Category(
-                id = 1,
-                name = "Food",
-                icon = CategoryIcon.RESTAURANTS,
-                color = CategoryColor.GOLDENROD
-            ),
-        ),
-        Expense(
-            id = 1,
-            amount = 10.56,
-            date = "13 Nov 2024",
-            title = "Amazon",
-            category = Category(
-                id = 1,
-                name = "Food",
-                icon = CategoryIcon.VACATION,
-                color = CategoryColor.PINK
-            ),
-        ),
-        Expense(
-            id = 1,
-            amount = 12.56,
-            date = "13 Nov 2024",
-            title = "Amazon",
-            category = Category(
-                id = 1,
-                name = "Food",
-                icon = CategoryIcon.GROCERY,
-                color = CategoryColor.SKY_BLUE
-            ),
-        ),
-        Expense(
-            id = 1,
-            amount = 105.89,
-            date = "13 Nov 2024",
-            title = "Amazon",
-            category = Category(
-                id = 1,
-                name = "Food",
-                icon = CategoryIcon.EDUCATION,
-                color = CategoryColor.CORNFLOWER_BLUE
-            ),
-        )
-    )
-}*/
