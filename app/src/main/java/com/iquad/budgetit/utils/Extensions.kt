@@ -20,3 +20,5 @@ fun String.toLocalDate(): LocalDate {
     // Convert string back to LocalDate if needed
     return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE)
 }
+
+fun Double.roundToTwoDecimalPlaces(): Double = "%.2f".format(this).toDouble()

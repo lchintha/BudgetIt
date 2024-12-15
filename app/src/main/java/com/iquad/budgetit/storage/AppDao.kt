@@ -33,8 +33,25 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertCategories(categories: List<Category>)
 
-    @Delete
-    suspend fun deleteCategory(category: Category)
+    @Transaction
+    suspend fun deleteCategory(oldCategoryId: Int, newCategoryId: Int) {
+        // First, update all expenses with the current category to the new category
+        updateExpenseCategoriesToNew(oldCategoryId, newCategoryId)
+        // Then delete the category
+        deleteCategoryById(oldCategoryId)
+    }
+
+    @Transaction
+    suspend fun deleteCategoryIncludingExpenses(categoryId: Int) {
+        //First, delete all expenses associated with the category
+        deleteExpensesByCategory(categoryId)
+        // Then delete the category
+        deleteCategoryById(categoryId)
+    }
+
+    // Actual deletion of the category by ID
+    @Query("DELETE FROM categories_table WHERE id = :categoryId")
+    suspend fun deleteCategoryById(categoryId: Int)
 
     // Insert a single expense
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -65,5 +82,21 @@ interface AppDao {
     // Get total expenses for a specific month
     @Query("SELECT SUM(amount) FROM expenses_table WHERE substr(date, 1, 7) = :month")
     fun getTotalExpensesByMonth(month: String): Flow<Double>
+
+    @Transaction
+    @Query("SELECT * FROM expenses_table WHERE category_id = :categoryId ORDER BY date DESC")
+    fun getExpensesByCategory(categoryId: Int): Flow<List<Expense>>
+
+    // Update expenses to the new category before deletion
+    @Query("UPDATE expenses_table SET category_id = :newCategoryId WHERE category_id = :oldCategoryId")
+    suspend fun updateExpenseCategoriesToNew(oldCategoryId: Int, newCategoryId: Int)
+
+    // Check if a category has any expenses
+    @Query("SELECT COUNT(*) FROM expenses_table WHERE category_id = :categoryId")
+    suspend fun countExpensesInCategory(categoryId: Int): Int
+
+    // Delete expenses by category
+    @Query("DELETE FROM expenses_table WHERE category_id = :categoryId")
+    suspend fun deleteExpensesByCategory(categoryId: Int)
 
 }

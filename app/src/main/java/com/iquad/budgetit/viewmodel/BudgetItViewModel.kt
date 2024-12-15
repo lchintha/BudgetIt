@@ -15,6 +15,7 @@ import com.iquad.budgetit.storage.PreferencesManager
 import com.iquad.budgetit.storage.defaultstorage.CategoryInitializer
 import com.iquad.budgetit.utils.CategoryColor
 import com.iquad.budgetit.utils.CategoryIcon
+import com.iquad.budgetit.utils.roundToTwoDecimalPlaces
 import com.iquad.budgetit.utils.toFormattedString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,8 +39,15 @@ class BudgetItViewModel(
 
     private val _expenses = MutableStateFlow<List<Expense>>(emptyList())
     val expenses: StateFlow<List<Expense>> get() = _expenses
+
     private val _totalExpenses = MutableStateFlow(0.0)
     val totalExpenses: StateFlow<Double> get() = _totalExpenses
+
+    private val _displayDialog = MutableStateFlow(false)
+    val displayDialog: StateFlow<Boolean> get() = _displayDialog
+
+    private val _deletingCategoryId = MutableStateFlow(-1)
+    val deletingCategory: StateFlow<Int> get() = _deletingCategoryId
 
     init {
         viewModelScope.launch {
@@ -102,14 +110,21 @@ class BudgetItViewModel(
         }
     }
 
-    fun deleteCategory(category: Category) {
-        viewModelScope.launch {
-            repository.deleteCategory(category)
+    fun deleteCategory(
+        categoryId: Int
+    ) = viewModelScope.launch {
+        val expenseCount = repository.countExpensesInCategory(categoryId)
+        if (expenseCount > 0) {
+            _displayDialog.value = true
+            _deletingCategoryId.value = categoryId
+        } else {
+            repository.deleteCategoryById(categoryId)
             _categories.update { currentCategories ->
-                currentCategories.filter { it.id != category.id }
+                currentCategories.filter { it.id != categoryId }
             }
         }
     }
+
 
     fun saveExpense(
         amount: Double,
@@ -139,12 +154,38 @@ class BudgetItViewModel(
             val currentMonth = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"))
             repository.getExpensesByMonth(currentMonth).collect { expenses ->
                 _expenses.value = expenses
-                _totalExpenses.value = expenses.sumOf { it.data.amount }
+                _totalExpenses.value = expenses.sumOf { it.data.amount }.roundToTwoDecimalPlaces()
             }
         }
     }
 
-    fun resetState(){
+    fun dismissDialog() {
+        _displayDialog.value = false
+    }
+
+    fun updateCategoryBeforeDeleting(
+        newCategoryId: Int
+    ) {
+        _displayDialog.value = false
+        viewModelScope.launch {
+            repository.deleteCategory(
+                oldCategoryId = _deletingCategoryId.value,
+                newCategoryId = newCategoryId
+            )
+        }
+    }
+
+    fun deleteExpensesAlongWithCategory() {
+        _displayDialog.value = false
+        viewModelScope.launch {
+            repository.deleteCategoryIncludingExpenses(_deletingCategoryId.value)
+            _categories.update { currentCategories ->
+                currentCategories.filter { it.id != _deletingCategoryId.value }
+            }
+        }
+    }
+
+    fun resetState() {
         _uiState.value = UiState.Idle
     }
 

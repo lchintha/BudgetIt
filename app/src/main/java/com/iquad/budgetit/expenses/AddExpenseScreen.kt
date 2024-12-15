@@ -46,6 +46,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -91,11 +92,14 @@ fun AddExpenseScreen(
     var isEditable by remember { mutableStateOf(false) }
     val categories by viewModel.categories.collectAsState()
     val budget by viewModel.budgetState.collectAsState()
+    val showDialog by viewModel.displayDialog.collectAsState()
+    val deletingCategoryId by viewModel.deletingCategory.collectAsState()
 
     val expenseAmount = remember { mutableStateOf("") }
     val expenseTitle = remember { mutableStateOf("") }
     val selectedCategory = remember { mutableStateOf<Category?>(null) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val updatingCategory = remember { mutableIntStateOf(0) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -151,8 +155,10 @@ fun AddExpenseScreen(
                         categories,
                         isEditMode = isEditable,
                         viewModel = viewModel,
-                        navController = navController,
-                        selectedCategory = selectedCategory
+                        selectedCategory = selectedCategory,
+                        onCustomCategoryItemClick = {
+                            navController.navigate(Screen.AddCategory.route)
+                        }
                     )
                 }
             }
@@ -200,6 +206,25 @@ fun AddExpenseScreen(
                 )
             )
         }
+    }
+
+    if(showDialog) {
+        DeleteCategoryDialog(
+            categories = categories,
+            deletingCategoryId = deletingCategoryId,
+            updatingCategory = updatingCategory,
+            onDismiss = {
+                viewModel.dismissDialog()
+            },
+            onUpdateCategory = {
+                viewModel.updateCategoryBeforeDeleting(
+                    updatingCategory.intValue,
+                )
+            },
+            onDeleteExpenses = {
+                viewModel.deleteExpensesAlongWithCategory()
+            }
+        )
     }
 
     LaunchedEffect(uiState) {
@@ -253,8 +278,8 @@ fun CategoriesList(
     categories: List<Category>,
     isEditMode: Boolean,
     viewModel: BudgetItViewModel,
-    navController: NavController,
-    selectedCategory: MutableState<Category?>
+    selectedCategory: MutableState<Category?>,
+    onCustomCategoryItemClick: () -> Unit = {}
 ) {
     // Create a custom category with a predefined icon and color
     val customCategory = Category(
@@ -286,7 +311,7 @@ fun CategoriesList(
                         if(!isCustomCategory) {
                             selectedCategory.value = category
                         } else {
-                            navController.navigate(Screen.AddCategory.route)
+                            onCustomCategoryItemClick.invoke()
                         }
                     },
                     isEditMode = isEditMode,
@@ -304,7 +329,7 @@ fun CategoryItem(
     isSelected: Boolean,
     onCategoryClick: () -> Unit,
     isEditMode: Boolean,
-    viewModel: BudgetItViewModel,
+        viewModel: BudgetItViewModel,
     isCustomCategory: Boolean
 ) {
     val jiggleAnimation = rememberInfiniteTransition(label = "jiggle")
@@ -346,8 +371,8 @@ fun CategoryItem(
                     .border(
                         width = if (isCustomCategory) 2.dp else 3.dp,
                         color = if (isCustomCategory) Color.LightGray
-                                else if (isSelected) colorResource(R.color.colorPrimary)
-                                else Color.Transparent,
+                        else if (isSelected) colorResource(R.color.colorPrimary)
+                        else Color.Transparent,
                         shape = CircleShape
                     )
                     .graphicsLayer {
@@ -385,7 +410,9 @@ fun CategoryItem(
                             .background(Color.Red)
                             .padding(4.dp)
                             .clickable {
-                                viewModel.deleteCategory(category)
+                                viewModel.deleteCategory(
+                                    categoryId = category.id
+                                )
                             }
                     )
                 }

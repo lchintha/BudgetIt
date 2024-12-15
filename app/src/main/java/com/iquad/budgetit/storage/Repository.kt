@@ -28,8 +28,16 @@ class BudgetItRepository(private val appDao: AppDao) {
         appDao.insertCategories(categories)
     }
 
-    suspend fun deleteCategory(category: Category) {
-        appDao.deleteCategory(category)
+    suspend fun deleteCategory(oldCategoryId: Int, newCategoryId: Int) {
+        appDao.deleteCategory(oldCategoryId, newCategoryId)
+    }
+
+    suspend fun deleteCategoryById(categoryId: Int) {
+        appDao.deleteCategoryById(categoryId)
+    }
+
+    suspend fun deleteCategoryIncludingExpenses(categoryId: Int) {
+        appDao.deleteCategoryIncludingExpenses(categoryId)
     }
 
     // Insert a single expense
@@ -55,6 +63,11 @@ class BudgetItRepository(private val appDao: AppDao) {
     // Get total expenses for a specific month
     fun getTotalExpensesByMonth(month: String): Flow<Double> {
         return appDao.getTotalExpensesByMonth(month)
+    }
+
+    // Check if a category has any expenses
+    suspend fun countExpensesInCategory(categoryId: Int): Int {
+        return appDao.countExpensesInCategory(categoryId)
     }
 
 }
