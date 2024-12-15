@@ -19,9 +19,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,10 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.model.TabItem
+import com.iquad.budgetit.model.TimeFrame
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
@@ -42,7 +42,9 @@ fun SpendingAnalysisScreen(
     navController: NavController,
     viewModel: BudgetItViewModel
 ) {
-    val selectedTab = remember { mutableStateOf<TabItem>(TabItem.Monthly) }
+
+    val selectedTab by viewModel.selectedTab.collectAsState()
+    val selectedTimeFrame by viewModel.selectedTimeFrame.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -59,10 +61,22 @@ fun SpendingAnalysisScreen(
                     .padding(12.dp)
             ) {
                 IntervalTabBar(
-                    selectedTab
+                    selectedTab,
+                    onClick = {
+                        viewModel.setSelectedTab(it)
+                        viewModel.setOrUpdateTimeFrame()
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                TimeFrameTabBar("Dev 2024")
+                TimeFrameTabBar(
+                    selectedTimeFrame = selectedTimeFrame,
+                    onChangeTimeFrameClick = {
+                        viewModel.setOrUpdateTimeFrame(
+                            isInitialSetup = false,
+                            toPrevious = it
+                        )
+                    }
+                )
             }
         }
     }
@@ -70,7 +84,8 @@ fun SpendingAnalysisScreen(
 
 @Composable
 fun IntervalTabBar(
-    selectedTab: MutableState<TabItem>
+    selectedTab: TabItem,
+    onClick: (item: TabItem) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -84,20 +99,24 @@ fun IntervalTabBar(
     ) {
         TabItem(
             title = "Weekly",
-            isSelected = selectedTab.value == TabItem.Weekly,
+            isSelected = selectedTab == TabItem.Weekly,
             onClick = {
-                selectedTab.value = TabItem.Weekly
+                onClick(TabItem.Weekly)
             }
         )
         TabItem(
             title = "Monthly",
-            isSelected = selectedTab.value == TabItem.Monthly,
-            onClick = { selectedTab.value = TabItem.Monthly }
+            isSelected = selectedTab == TabItem.Monthly,
+            onClick = {
+                onClick(TabItem.Monthly)
+            }
         )
         TabItem(
             title = "Yearly",
-            isSelected = selectedTab.value == TabItem.Yearly,
-            onClick = { selectedTab.value = TabItem.Yearly }
+            isSelected = selectedTab == TabItem.Yearly,
+            onClick = {
+                onClick(TabItem.Yearly)
+            }
         )
     }
 }
@@ -132,7 +151,8 @@ private fun TabItem(
 
 @Composable
 fun TimeFrameTabBar(
-    title: String
+    selectedTimeFrame: TimeFrame,
+    onChangeTimeFrameClick: (Boolean) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -151,10 +171,13 @@ fun TimeFrameTabBar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = "Previous",
-                tint = Color.Gray
+                tint = Color.Gray,
+                modifier = Modifier.clickable {
+                    onChangeTimeFrameClick(true)
+                }
             )
             Text(
-                text = title,
+                text = selectedTimeFrame.title,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .weight(1f)
@@ -164,22 +187,11 @@ fun TimeFrameTabBar(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Next",
-                tint = Color.Gray
+                tint = Color.Gray,
+                modifier = Modifier.clickable {
+                    onChangeTimeFrameClick(false)
+                }
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun TimeFrameTabBarPreview() {
-    TimeFrameTabBar(
-        "sdjknf"
-    )
-}
-
-sealed class TabItem {
-    data object Weekly : TabItem()
-    data object Monthly : TabItem()
-    data object Yearly : TabItem()
 }
