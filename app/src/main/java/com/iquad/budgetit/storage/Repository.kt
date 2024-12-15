@@ -50,24 +50,19 @@ class BudgetItRepository(private val appDao: AppDao) {
         appDao.updateExpense(expense)
     }
 
-    // Delete a single expense
-    suspend fun deleteExpense(expense: ExpenseWithCategoryId) {
-        appDao.deleteExpense(expense)
-    }
-
     // Get expenses by month
     fun getExpensesByMonth(month: String): Flow<List<Expense>> {
         return appDao.getExpensesByMonth(month)
     }
 
-    // Get total expenses for a specific month
-    fun getTotalExpensesByMonth(month: String): Flow<Double> {
-        return appDao.getTotalExpensesByMonth(month)
-    }
-
     // Check if a category has any expenses
     suspend fun countExpensesInCategory(categoryId: Int): Int {
         return appDao.countExpensesInCategory(categoryId)
+    }
+
+    // Get expenses in a timeframe
+    fun getExpensesByTimeFrame(startDate: String, endDate: String): Flow<List<Expense>> {
+        return appDao.getExpensesByTimeFrame(startDate, endDate)
     }
 
 }

@@ -1,7 +1,6 @@
 package com.iquad.budgetit.storage
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -61,10 +60,6 @@ interface AppDao {
     @Update
     suspend fun updateExpense(expense: ExpenseWithCategoryId)
 
-    // Delete a single expense
-    @Delete
-    suspend fun deleteExpense(expense: ExpenseWithCategoryId)
-
     // Delete expense by ID
     @Query("DELETE FROM expenses_table WHERE id = :expenseId")
     suspend fun deleteExpenseById(expenseId: Int)
@@ -79,14 +74,6 @@ interface AppDao {
     @Query("SELECT * FROM expenses_table WHERE substr(date, 1, 7) = :month ORDER BY date DESC")
     fun getExpensesByMonth(month: String): Flow<List<Expense>>
 
-    // Get total expenses for a specific month
-    @Query("SELECT SUM(amount) FROM expenses_table WHERE substr(date, 1, 7) = :month")
-    fun getTotalExpensesByMonth(month: String): Flow<Double>
-
-    @Transaction
-    @Query("SELECT * FROM expenses_table WHERE category_id = :categoryId ORDER BY date DESC")
-    fun getExpensesByCategory(categoryId: Int): Flow<List<Expense>>
-
     // Update expenses to the new category before deletion
     @Query("UPDATE expenses_table SET category_id = :newCategoryId WHERE category_id = :oldCategoryId")
     suspend fun updateExpenseCategoriesToNew(oldCategoryId: Int, newCategoryId: Int)
@@ -98,5 +85,18 @@ interface AppDao {
     // Delete expenses by category
     @Query("DELETE FROM expenses_table WHERE category_id = :categoryId")
     suspend fun deleteExpensesByCategory(categoryId: Int)
+
+    // Get expenses in a timeframe
+    // Date format YYYY-MM-DD
+    @Transaction
+    @Query(
+        """
+    SELECT * 
+    FROM expenses_table
+    WHERE date(date) BETWEEN date(:startDate) AND date(:endDate)
+    ORDER BY date DESC
+"""
+    )
+    fun getExpensesByTimeFrame(startDate: String, endDate: String): Flow<List<Expense>>
 
 }

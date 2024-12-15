@@ -3,6 +3,7 @@ package com.iquad.budgetit.charts
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,8 @@ fun HalfCircleProgressBar(
     spentAmount: Double,
     totalAmount: Double,
     modifier: Modifier = Modifier,
-    currency: Currency = Currency.USD
+    currency: Currency = Currency.USD,
+    onClickListener: () -> Unit
 ) {
     val backgroundColor: Color = colorResource(R.color.light_blue)
     val percentage: Double
@@ -115,6 +117,10 @@ fun HalfCircleProgressBar(
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
+                modifier = Modifier
+                    .clickable {
+                        onClickListener.invoke()
+                    }
             )
             Text(
                 text = "spent this month",
@@ -135,6 +141,8 @@ fun HalfCircleProgressBarPreview() {
 
     HalfCircleProgressBar(
         spentAmount = spent,
-        totalAmount = total
+        totalAmount = total,
+        currency = Currency.USD,
+        onClickListener = {}
     )
 }

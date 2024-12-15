@@ -66,7 +66,10 @@ fun HomeScreen(
         HalfCircleProgressBar(
             spentAmount = totalExpenses,
             totalAmount = budget?.amount ?: 1.0,
-            currency = budget?.currency ?: Currency.USD
+            currency = budget?.currency ?: Currency.USD,
+            onClickListener = {
+                navController.navigate(Screen.SpendingAnalysisScreen.route)
+            }
         )
         AddExpenseButton(navController)
         Spacer(modifier = Modifier.height(8.dp))

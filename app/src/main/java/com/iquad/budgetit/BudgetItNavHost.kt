@@ -11,6 +11,7 @@ import com.iquad.budgetit.enterbudget.EnterBudgetScreen
 import com.iquad.budgetit.expenses.AddCategory
 import com.iquad.budgetit.expenses.AddExpenseScreen
 import com.iquad.budgetit.expenses.AllExpensesScreen
+import com.iquad.budgetit.expenses.SpendingAnalysisScreen
 import com.iquad.budgetit.homescreen.HomeScreen
 import com.iquad.budgetit.settings.SettingsScreen
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
@@ -59,6 +60,12 @@ fun BudgetItNavHost(
         }
         composable(route = Screen.AddCategory.route) {
             AddCategory(
+                navController,
+                viewModel
+            )
+        }
+        composable(route = Screen.SpendingAnalysisScreen.route) {
+            SpendingAnalysisScreen(
                 navController,
                 viewModel
             )
