@@ -1,5 +1,8 @@
 package com.iquad.budgetit.model
 
+import android.health.connect.datatypes.units.Percentage
+import com.iquad.budgetit.storage.Category
+
 enum class AppearanceOption {Light, Dark, System}
 
 enum class Currency(val symbol: String) {
@@ -21,3 +24,9 @@ sealed class TabItem {
     data object Monthly : TabItem()
     data object Yearly : TabItem()
 }
+
+data class ExpenseBreakDown(
+    val category: Category,
+    val amount: Double,
+    val percentage: Float
+)

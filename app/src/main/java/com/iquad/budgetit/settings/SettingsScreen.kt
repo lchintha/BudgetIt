@@ -393,10 +393,3 @@ fun TitleText(
         style = style
     )
 }
-
-/*
-@Preview
-@Composable
-fun SettingsScreenPreview() {
-    SettingsScreen(navController = rememberNavController())
-}*/

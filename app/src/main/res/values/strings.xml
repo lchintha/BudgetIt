@@ -13,6 +13,7 @@
     <string name="add_expense">Add Expense</string>
     <string name="recent_expenses">Recent Expenses</string>
     <string name="all">All</string>
+    <string name="no_recent_expenses">No expenses added in the current month.</string>
 
     <!-- Add Expense -->
     <string name="save">Save</string>
@@ -61,5 +62,6 @@
     <string name="total_spending">Total Spending</string>
     <string name="budget">Budget</string>
     <string name="spent">Spent</string>
+    <string name="no_expenses_to_display">No expenses to display in the selected timeframe. Please select different dates to see the spending analysis.</string>
 
 </resources>

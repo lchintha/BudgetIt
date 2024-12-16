@@ -40,6 +40,7 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
 import com.iquad.budgetit.expenses.ExpenseItem
+import com.iquad.budgetit.expenses.NoExpensesToDisplay
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
@@ -205,18 +206,25 @@ fun RecentExpenses(
                     .padding(4.dp)
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            items(expenses) { expense ->
-                ExpenseItem(
-                    expense,
-                    currency
-                )
+        if(expenses.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(expenses) { expense ->
+                    ExpenseItem(
+                        expense,
+                        currency
+                    )
+                }
             }
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+            NoExpensesToDisplay(
+                stringResource(R.string.no_recent_expenses)
+            )
         }
     }
 }

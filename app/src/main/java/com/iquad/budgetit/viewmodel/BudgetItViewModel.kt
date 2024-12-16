@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iquad.budgetit.model.Currency
+import com.iquad.budgetit.model.ExpenseBreakDown
 import com.iquad.budgetit.model.TabItem
 import com.iquad.budgetit.model.TimeFrame
 import com.iquad.budgetit.storage.BudgetEntity
@@ -73,6 +74,9 @@ class BudgetItViewModel(
         )
     )
     val selectedTimeFrame: StateFlow<TimeFrame> get() = _selectedTimeFrame
+
+    private val _expensesByCategory = MutableStateFlow<List<ExpenseBreakDown>>(emptyList())
+    val expensesByCategory: StateFlow<List<ExpenseBreakDown>> get() = _expensesByCategory
 
     init {
         viewModelScope.launch {
@@ -232,16 +236,15 @@ class BudgetItViewModel(
                     else -> baseDate.plusWeeks(1)
                 }
 
-                val startOfWeek = targetDate
-                val endOfWeek = startOfWeek.plusDays(6)
+                val endOfWeek = targetDate.plusDays(6)
 
-                val title = "${startOfWeek.format(DateTimeFormatter.ofPattern("MMM dd"))} - " +
+                val title = "${targetDate.format(DateTimeFormatter.ofPattern("MMM dd"))} - " +
                         endOfWeek.format(DateTimeFormatter.ofPattern("MMM dd"))
 
                 Pair(
                     TimeFrame(
                         title = title,
-                        startDate = startOfWeek.toString(),
+                        startDate = targetDate.toString(),
                         endDate = endOfWeek.toString()
                     ),
                     true
@@ -294,15 +297,28 @@ class BudgetItViewModel(
         updateExpensesListForSelectedTimeFrame()
     }
 
-    private fun updateExpensesListForSelectedTimeFrame() {
+    fun updateExpensesListForSelectedTimeFrame() {
         viewModelScope.launch {
             repository.getExpensesByTimeFrame(
                 selectedTimeFrame.value.startDate,
                 selectedTimeFrame.value.endDate
             ).collect { list ->
                 _expensesByTimeFrame.value = list
+                groupExpensesByCategory()
             }
         }
+    }
+
+    private fun groupExpensesByCategory() {
+        val expenses = _expensesByTimeFrame.value
+        val totalAmount = expenses.sumOf { it.data.amount }
+        _expensesByCategory.value = expenses.groupBy { it.category }
+            .map { (category, categoryExpenses) ->
+                val categoryAmount = categoryExpenses.sumOf { it.data.amount }
+                val percentage = (categoryAmount / totalAmount) * 100
+
+                ExpenseBreakDown(category, categoryAmount, percentage.toFloat())
+            }
     }
 
     fun resetState() {
