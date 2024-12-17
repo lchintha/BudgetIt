@@ -1,13 +1,15 @@
 package com.iquad.budgetit.viewmodel
 
+import android.app.Application
 import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.model.ExpenseBreakDown
 import com.iquad.budgetit.model.TabItem
+import com.iquad.budgetit.model.ThemeMode
 import com.iquad.budgetit.model.TimeFrame
 import com.iquad.budgetit.storage.BudgetEntity
 import com.iquad.budgetit.storage.BudgetItRepository
@@ -31,9 +33,11 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 class BudgetItViewModel(
-    private val repository: BudgetItRepository
-) : ViewModel() {
+    private val repository: BudgetItRepository,
+    application: Application
+) : AndroidViewModel(application = application) {
 
+    private val storageManager = PreferencesManager.getInstance(getApplication())
     private val currentDate: LocalDate = LocalDate.now()
     private val month: String =
         currentDate.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
@@ -78,6 +82,9 @@ class BudgetItViewModel(
     private val _expensesByCategory = MutableStateFlow<List<ExpenseBreakDown>>(emptyList())
     val expensesByCategory: StateFlow<List<ExpenseBreakDown>> get() = _expensesByCategory
 
+    private val _currentTheme = MutableStateFlow(ThemeMode.valueOf(storageManager.getAppearance()))
+    val currentTheme: StateFlow<ThemeMode> get() = _currentTheme
+
     init {
         viewModelScope.launch {
             repository.budget.collect { budget ->
@@ -87,8 +94,12 @@ class BudgetItViewModel(
         }
     }
 
+    fun setTheme(themeMode: ThemeMode) {
+        storageManager.setAppearance(themeMode)
+        _currentTheme.value = themeMode
+    }
+
     fun processBudget(
-        context: Context,
         currency: Currency,
         amount: Double
     ) {
@@ -96,7 +107,7 @@ class BudgetItViewModel(
             if (amount == 0.0) {
                 _uiState.value = UiState.Error
             } else {
-                val storageManager = PreferencesManager.getInstance(context)
+
                 repository.insertBudget(
                     BudgetEntity(
                         currency = currency,

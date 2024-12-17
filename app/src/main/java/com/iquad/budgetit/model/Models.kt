@@ -1,9 +1,8 @@
 package com.iquad.budgetit.model
 
-import android.health.connect.datatypes.units.Percentage
 import com.iquad.budgetit.storage.Category
 
-enum class AppearanceOption {Light, Dark, System}
+enum class ThemeMode {Light, Dark, System}
 
 enum class Currency(val symbol: String) {
     USD("$"),

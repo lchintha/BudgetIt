@@ -139,11 +139,10 @@ fun SpendingAnalysisScreen(
                 }
             }
             if (expensesByCategory.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                 ) {
                     TotalAmountSection(
                         expensesByCategory.sumOf { it.amount }

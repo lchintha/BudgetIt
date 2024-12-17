@@ -92,7 +92,6 @@ fun EnterBudgetScreen(
         Button(
             onClick = {
                 viewModel.processBudget(
-                    navController.context,
                     selectedCurrency.value,
                     if(budgetAmount.value.isEmpty()) 0.0 else budgetAmount.value.toDouble()
                 )

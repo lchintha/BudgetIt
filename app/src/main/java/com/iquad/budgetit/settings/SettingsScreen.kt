@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
-import com.iquad.budgetit.model.AppearanceOption
 import com.iquad.budgetit.model.Currency
+import com.iquad.budgetit.model.ThemeMode
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CurrencyDropdown
 import com.iquad.budgetit.utils.InputAmountTextField
@@ -62,6 +62,7 @@ fun SettingsScreen(
     val budget by viewModel.budgetState.collectAsState()
     val selectedCurrency = remember { mutableStateOf(budget?.currency ?: Currency.USD) }
     val selectedAmount = remember { mutableStateOf(budget?.amount?.toString() ?: "0") }
+    val themeMode by viewModel.currentTheme.collectAsState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -82,7 +83,9 @@ fun SettingsScreen(
             ) {
                 Preferences(
                     selectedCurrency = selectedCurrency,
-                    selectedAmount = selectedAmount
+                    selectedAmount = selectedAmount,
+                    selectedTheme = themeMode,
+                    viewModel = viewModel
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareAndSupportSection()
@@ -98,13 +101,18 @@ fun SettingsScreen(
 @Composable
 fun Preferences(
     selectedCurrency: MutableState<Currency>,
-    selectedAmount: MutableState<String>
+    selectedAmount: MutableState<String>,
+    selectedTheme: ThemeMode,
+    viewModel: BudgetItViewModel
 ) {
     TitleText(
         title = stringResource(R.string.preferences)
     )
     Spacer(modifier = Modifier.height(8.dp))
-    AppearanceSection()
+    AppearanceSection(
+        selectedTheme = selectedTheme,
+        viewModel = viewModel
+    )
     Spacer(modifier = Modifier.height(8.dp))
     MonthlyBudgetSection(
         selectedCurrency = selectedCurrency,
@@ -200,7 +208,10 @@ fun VersionSection() {
 }
 
 @Composable
-fun AppearanceSection() {
+fun AppearanceSection(
+    selectedTheme: ThemeMode,
+    viewModel: BudgetItViewModel
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +231,10 @@ fun AppearanceSection() {
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
-            AppearanceOptionsList()
+            ThemeModesList(
+                selectedTheme = selectedTheme,
+                viewModel = viewModel
+            )
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -275,8 +289,11 @@ fun MonthlyBudgetSection(
 }
 
 @Composable
-fun AppearanceOptionsList() {
-    var selectedOption by remember { mutableStateOf(AppearanceOption.Light) }
+fun ThemeModesList(
+    selectedTheme: ThemeMode,
+    viewModel: BudgetItViewModel
+) {
+    var selectedOption by remember { mutableStateOf(selectedTheme) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -287,12 +304,13 @@ fun AppearanceOptionsList() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(AppearanceOption.entries.size) { index ->
-                val option = AppearanceOption.entries[index]
-                AppearanceOptionItem(
+            items(ThemeMode.entries.size) { index ->
+                val option = ThemeMode.entries[index]
+                ThemeModeItem(
                     option = option,
                     isSelected = option == selectedOption,
                     onOptionClick = {
+                        viewModel.setTheme(option)
                         selectedOption = option
                     }
                 )
@@ -302,8 +320,8 @@ fun AppearanceOptionsList() {
 }
 
 @Composable
-fun AppearanceOptionItem(
-    option: AppearanceOption,
+fun ThemeModeItem(
+    option: ThemeMode,
     isSelected: Boolean,
     onOptionClick: () -> Unit
 ) {

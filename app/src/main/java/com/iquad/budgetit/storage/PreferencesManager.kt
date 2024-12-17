@@ -2,6 +2,7 @@ package com.iquad.budgetit.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.iquad.budgetit.model.ThemeMode
 
 class PreferencesManager private constructor(context: Context) {
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(
@@ -11,9 +12,8 @@ class PreferencesManager private constructor(context: Context) {
 
     companion object {
         private const val PREFS_NAME = "AppPreferences"
-        private const val KEY_AMOUNT = "saved_amount"
-        private const val KEY_CURRENCY = "saved_currency"
         private const val KEY_FIRST_LAUNCH = "is_first_launch"
+        private const val KEY_APPEARANCE = "appearance"
 
         @Volatile
         private var instance: PreferencesManager? = null
@@ -25,32 +25,6 @@ class PreferencesManager private constructor(context: Context) {
                 }
             }
         }
-    }
-
-    // Save amount
-    fun saveAmount(amount: Double) {
-        sharedPreferences.edit().apply {
-            putFloat(KEY_AMOUNT, amount.toFloat())
-            apply()
-        }
-    }
-
-    // Get amount with default value
-    fun getAmount(defaultValue: Double = 0.0): Double {
-        return sharedPreferences.getFloat(KEY_AMOUNT, defaultValue.toFloat()).toDouble()
-    }
-
-    // Save currency
-    fun saveCurrency(currency: String) {
-        sharedPreferences.edit().apply {
-            putString(KEY_CURRENCY, currency)
-            apply()
-        }
-    }
-
-    // Get currency with default value
-    fun getCurrency(defaultValue: String = "USD"): String {
-        return sharedPreferences.getString(KEY_CURRENCY, defaultValue) ?: defaultValue
     }
 
     // Save first launch flag
@@ -66,8 +40,17 @@ class PreferencesManager private constructor(context: Context) {
         return sharedPreferences.getBoolean(KEY_FIRST_LAUNCH, true)
     }
 
-    // Clear all preferences
-    fun clear() {
-        sharedPreferences.edit().clear().apply()
+    // Save appearance option
+    fun setAppearance(themeMode: ThemeMode) {
+        sharedPreferences.edit().apply {
+            putString(KEY_APPEARANCE, themeMode.name)
+            apply()
+        }
+    }
+
+    // Get saved appearance option
+    fun getAppearance(): String {
+        return sharedPreferences.getString(KEY_APPEARANCE, ThemeMode.Light.name)
+            ?: ThemeMode.Light.name
     }
 }
