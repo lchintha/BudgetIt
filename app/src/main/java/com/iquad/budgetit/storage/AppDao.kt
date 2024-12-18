@@ -17,8 +17,13 @@ interface AppDao {
     @Update
     suspend fun updateBudget(budget: BudgetEntity)
 
-    @Query("SELECT * FROM budget_table")
-    fun getBudget(): Flow<List<BudgetEntity>>
+    // Get the latest budget
+    @Query("SELECT * FROM budget_table ORDER BY timestamp DESC LIMIT 1")
+    fun getLatestBudget(): Flow<BudgetEntity?>
+
+    // Get the budget history
+    @Query("SELECT * FROM budget_table ORDER BY timestamp DESC")
+    fun getBudgetHistory(): Flow<List<BudgetEntity>>
 
     @Query("SELECT COUNT(*) FROM categories_table")
     suspend fun getCategoryCount(): Int

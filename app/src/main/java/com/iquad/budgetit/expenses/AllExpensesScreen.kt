@@ -57,8 +57,8 @@ fun AllExpensesScreen(
     ) {
         Column {
             BudgetItToolBar(
-                navController = navController,
                 title = stringResource(R.string.all_expenses),
+                onBackPress = { navController.popBackStack() }
             )
             Column(
                 modifier = Modifier

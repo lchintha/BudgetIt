@@ -93,7 +93,8 @@ fun EnterBudgetScreen(
             onClick = {
                 viewModel.processBudget(
                     selectedCurrency.value,
-                    if(budgetAmount.value.isEmpty()) 0.0 else budgetAmount.value.toDouble()
+                    if(budgetAmount.value.isEmpty()) 0.0 else budgetAmount.value.toDouble(),
+                    markFirstLaunch = true
                 )
             },
             modifier = Modifier
@@ -120,6 +121,7 @@ fun EnterBudgetScreen(
                         inclusive = true
                     }
                 }
+                viewModel.resetState()
             }
 
             BudgetItViewModel.UiState.Error -> {
@@ -128,6 +130,7 @@ fun EnterBudgetScreen(
                     title = "Enter Budget",
                     messageType = MessageType.FAILURE
                 )
+                viewModel.resetState()
             }
 
             else -> {}

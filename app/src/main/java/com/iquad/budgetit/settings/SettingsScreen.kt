@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,7 +50,10 @@ import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.model.ThemeMode
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.CurrencyDropdown
+import com.iquad.budgetit.utils.FlexibleAlertDialog
+import com.iquad.budgetit.utils.GlobalStaticMessage
 import com.iquad.budgetit.utils.InputAmountTextField
+import com.iquad.budgetit.utils.MessageType
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
@@ -59,10 +62,12 @@ fun SettingsScreen(
     viewModel: BudgetItViewModel
 ) {
 
+    val uiState by viewModel.uiState.observeAsState()
     val budget by viewModel.budgetState.collectAsState()
     val selectedCurrency = remember { mutableStateOf(budget?.currency ?: Currency.USD) }
     val selectedAmount = remember { mutableStateOf(budget?.amount?.toString() ?: "0") }
     val themeMode by viewModel.currentTheme.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -72,8 +77,16 @@ fun SettingsScreen(
                 .fillMaxSize()
         ) {
             BudgetItToolBar(
-                navController = navController,
-                title = stringResource(R.string.settings)
+                title = stringResource(R.string.settings),
+                onBackPress = {
+                    if (selectedCurrency.value != budget?.currency ||
+                        selectedAmount.value != (budget?.amount?.toString() ?: "0")
+                    ) {
+                        showDialog = true
+                    } else {
+                        navController.popBackStack()
+                    }
+                }
             )
             Column(
                 modifier = Modifier
@@ -94,6 +107,46 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             VersionSection()
+        }
+    }
+
+    if (showDialog) {
+        FlexibleAlertDialog(
+            description = stringResource(R.string.confirm_budget_change_dialog),
+            primaryActionText = stringResource(R.string.confirm),
+            secondaryActionText = stringResource(R.string.discard),
+            onPrimaryAction = {
+                viewModel.processBudget(
+                    selectedCurrency.value,
+                    selectedAmount.value.toDouble()
+                )
+            },
+            onSecondaryAction = {
+                navController.popBackStack()
+            },
+            onDismiss = {
+                showDialog = false
+            }
+        )
+    }
+
+    uiState?.let {
+        when (uiState) {
+            is BudgetItViewModel.UiState.Success -> {
+                navController.popBackStack()
+                viewModel.resetState()
+            }
+
+            BudgetItViewModel.UiState.Error -> {
+                GlobalStaticMessage.show(
+                    context = navController.context,
+                    title = "Enter Budget",
+                    messageType = MessageType.FAILURE
+                )
+                viewModel.resetState()
+            }
+
+            else -> {}
         }
     }
 }
@@ -174,7 +227,7 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(5.dp)
-                    .clickable {  }
+                    .clickable { }
             )
             Text(
                 text = stringResource(R.string.privacy_policy),
@@ -184,7 +237,7 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(start = 5.dp, bottom = 5.dp)
-                    .clickable {  }
+                    .clickable { }
             )
         }
     }
@@ -271,7 +324,6 @@ fun MonthlyBudgetSection(
                 CurrencyDropdown(
                     selectedCurrency = selectedCurrency
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 InputAmountTextField(
                     onValueChange = {
                         selectedAmount.value = it

@@ -15,6 +15,7 @@ data class BudgetEntity(
     val id: Int = 0,
     val currency: Currency,
     val amount: Double,
+    val timestamp: Long = System.currentTimeMillis()
 )
 
 @Entity(tableName = "categories_table")

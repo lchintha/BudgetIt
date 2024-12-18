@@ -1,7 +1,6 @@
 package com.iquad.budgetit.viewmodel
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -88,8 +87,7 @@ class BudgetItViewModel(
     init {
         viewModelScope.launch {
             repository.budget.collect { budget ->
-                if (budget.isNotEmpty())
-                    _budgetState.value = budget[0]
+                _budgetState.value = budget
             }
         }
     }
@@ -101,21 +99,27 @@ class BudgetItViewModel(
 
     fun processBudget(
         currency: Currency,
-        amount: Double
+        amount: Double,
+        markFirstLaunch: Boolean = false
     ) {
         viewModelScope.launch {
             if (amount == 0.0) {
                 _uiState.value = UiState.Error
             } else {
-
-                repository.insertBudget(
-                    BudgetEntity(
-                        currency = currency,
-                        amount = amount
-                    )
+                val budgetEntity = BudgetEntity(
+                    currency = currency,
+                    amount = amount
                 )
-                CategoryInitializer.initializeCategories(repository)
-                storageManager.setFirstLaunch(false)
+                viewModelScope.launch {
+                    repository.insertBudget(
+                        budgetEntity
+                    )
+                    _budgetState.value = budgetEntity
+                }
+                if (markFirstLaunch) {
+                    CategoryInitializer.initializeCategories(repository)
+                    storageManager.setFirstLaunch(false)
+                }
                 _uiState.value = UiState.Success
             }
         }

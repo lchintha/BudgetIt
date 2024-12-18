@@ -63,5 +63,7 @@
     <string name="budget">Budget</string>
     <string name="spent">Spent</string>
     <string name="no_expenses_to_display">No expenses to display in the selected timeframe. Please select different dates to see the spending analysis.</string>
+    <string name="confirm_budget_change_dialog">Do you want to save your changes before navigating away?</string>
+    <string name="discard">Discard</string>
 
 </resources>

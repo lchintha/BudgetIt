@@ -110,9 +110,9 @@ fun AddExpenseScreen(
                 .padding(bottom = 56.dp)
         ) {
             BudgetItToolBar(
-                navController = navController,
                 title = stringResource(R.string.add_expense),
                 toolbarOption = stringResource(R.string.save),
+                onBackPress =  { navController.popBackStack() },
                 onItemClick = {
                     viewModel.saveExpense(
                         amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),

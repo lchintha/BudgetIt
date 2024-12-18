@@ -17,15 +17,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.iquad.budgetit.R
 
 @Composable
 fun BudgetItToolBar(
-    navController: NavController,
     title: String,
     toolbarOption: String? = null,
+    onBackPress: () -> Unit = {},
     onItemClick: () -> Unit = {}
 ) {
     Row(
@@ -34,7 +32,7 @@ fun BudgetItToolBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = {
-            navController.popBackStack()
+            onBackPress.invoke()
         }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -68,8 +66,8 @@ fun BudgetItToolBar(
 @Composable
 fun BudgetItToolBarPreview() {
     BudgetItToolBar(
-        navController = rememberNavController(),
         "Add Expense",
-        "Save"
+        "Save",
+        onBackPress = {},
     )
 }

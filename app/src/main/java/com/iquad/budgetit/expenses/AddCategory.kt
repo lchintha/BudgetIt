@@ -64,9 +64,9 @@ fun AddCategory(
                 .padding(bottom = 10.dp)
         ) {
             BudgetItToolBar(
-                navController = navController,
                 title = stringResource(R.string.add_category),
                 toolbarOption = stringResource(R.string.save),
+                onBackPress =  { navController.popBackStack() },
                 onItemClick = {
                     viewModel.addCategory(
                         categoryName.value,

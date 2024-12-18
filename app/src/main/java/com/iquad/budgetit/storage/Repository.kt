@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 class BudgetItRepository(private val appDao: AppDao) {
 
-    val budget: Flow<List<BudgetEntity>> = appDao.getBudget()
+    val budget: Flow<BudgetEntity?> = appDao.getLatestBudget()
 
     suspend fun insertBudget(budget: BudgetEntity) {
         appDao.insertBudget(budget)

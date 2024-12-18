@@ -43,7 +43,7 @@ fun CurrencyDropdown(
 
         Box(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(start = 8.dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
