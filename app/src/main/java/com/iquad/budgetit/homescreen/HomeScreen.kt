@@ -194,17 +194,19 @@ fun RecentExpenses(
                 )
             )
             Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(R.string.all),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = colorResource(R.color.colorPrimary)
-                ),
-                modifier = Modifier
-                    .clickable {
-                        onClickListener.invoke()
-                    }
-                    .padding(4.dp)
-            )
+            if(expenses.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.all),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = colorResource(R.color.colorPrimary)
+                    ),
+                    modifier = Modifier
+                        .clickable {
+                            onClickListener.invoke()
+                        }
+                        .padding(4.dp)
+                )
+            }
         }
         if(expenses.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))

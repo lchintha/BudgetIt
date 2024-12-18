@@ -1,5 +1,6 @@
 package com.iquad.budgetit.settings
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -54,6 +56,10 @@ import com.iquad.budgetit.utils.FlexibleAlertDialog
 import com.iquad.budgetit.utils.GlobalStaticMessage
 import com.iquad.budgetit.utils.InputAmountTextField
 import com.iquad.budgetit.utils.MessageType
+import com.iquad.budgetit.utils.Util
+import com.iquad.budgetit.utils.playStoreUrl
+import com.iquad.budgetit.utils.privacyPolicyUrl
+import com.iquad.budgetit.utils.tncUrl
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
@@ -103,7 +109,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareAndSupportSection()
                 Spacer(modifier = Modifier.height(16.dp))
-                LegalSection()
+                LegalSection(context = navController.context)
                 Spacer(modifier = Modifier.height(16.dp))
             }
             VersionSection()
@@ -174,7 +180,9 @@ fun Preferences(
 }
 
 @Composable
-fun ShareAndSupportSection() {
+fun ShareAndSupportSection(
+    context: Context = LocalContext.current
+) {
     Column {
         TitleText(
             title = stringResource(R.string.share_and_support)
@@ -184,27 +192,35 @@ fun ShareAndSupportSection() {
             leftIcon = Icons.Rounded.Share,
             title = stringResource(R.string.share_app),
             rightIcon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            onTabClick = {}
+            onTabClick = {
+                Util.shareApp(context)
+            }
         )
         Spacer(modifier = Modifier.height(4.dp))
         ShareAndSupportTab(
             leftIcon = Icons.Rounded.StarBorder,
             title = stringResource(R.string.rate_app),
             rightIcon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            onTabClick = {}
+            onTabClick = {
+                Util.launchUrl(context, playStoreUrl)
+            }
         )
         Spacer(modifier = Modifier.height(4.dp))
         ShareAndSupportTab(
             leftIcon = Icons.Rounded.MailOutline,
             title = stringResource(R.string.send_feedback),
             rightIcon = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-            onTabClick = {}
+            onTabClick = {
+                Util.sendEmail(context)
+            }
         )
     }
 }
 
 @Composable
-fun LegalSection() {
+fun LegalSection(
+    context: Context
+) {
     TitleText(
         title = stringResource(R.string.legal)
     )
@@ -227,7 +243,9 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(5.dp)
-                    .clickable { }
+                    .clickable {
+                        Util.launchUrl(context, tncUrl)
+                    }
             )
             Text(
                 text = stringResource(R.string.privacy_policy),
@@ -237,7 +255,9 @@ fun LegalSection() {
                 ),
                 modifier = Modifier
                     .padding(start = 5.dp, bottom = 5.dp)
-                    .clickable { }
+                    .clickable {
+                        Util.launchUrl(context, privacyPolicyUrl)
+                    }
             )
         }
     }
