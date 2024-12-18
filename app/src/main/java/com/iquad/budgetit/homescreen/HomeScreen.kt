@@ -125,7 +125,7 @@ fun AddExpenseButton(navController: NavController) {
                 shape = CircleShape
             )
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .clickable {
                 navController.navigate(Screen.AddExpenseScreen.route)
@@ -146,7 +146,7 @@ fun AddExpenseButton(navController: NavController) {
                         shape = CircleShape
                     )
                     .background(
-                        color = colorResource(R.color.light_blue)
+                        color = MaterialTheme.colorScheme.primaryContainer
                     )
             ) {
                 Icon(
@@ -190,7 +190,7 @@ fun RecentExpenses(
             Text(
                 text = stringResource(R.string.recent_expenses),
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
             Spacer(modifier = Modifier.weight(1f))

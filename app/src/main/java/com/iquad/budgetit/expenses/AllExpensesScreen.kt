@@ -92,7 +92,7 @@ fun ExpenseItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .padding(8.dp)
     ) {
@@ -132,7 +132,7 @@ fun ExpenseItem(
                 Text(
                     text = expense.data.title,
                     style = TextStyle(
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = MaterialTheme.typography.titleMedium.fontSize
                     )
                 )
@@ -149,7 +149,7 @@ fun ExpenseItem(
             Text(
                 text = "${currency.symbol}${expense.data.amount}",
                 style = TextStyle(
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = MaterialTheme.typography.titleMedium.fontSize
                 ),
                 modifier = Modifier

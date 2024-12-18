@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,14 +38,14 @@ fun HalfCircleProgressBar(
     currency: Currency = Currency.USD,
     onClickListener: () -> Unit
 ) {
-    val backgroundColor: Color = colorResource(R.color.light_blue)
+    val backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer
     val percentage: Double
     val foregroundColor: Color = if (spentAmount > totalAmount) {
         percentage = 1.0
         Color.Red
     } else {
         percentage = spentAmount / totalAmount
-        colorResource(R.color.colorPrimary)
+        MaterialTheme.colorScheme.primary
     }
 
     val animatedPercentage by animateFloatAsState(
@@ -116,7 +117,7 @@ fun HalfCircleProgressBar(
                 text = "${currency.symbol}$spentAmount",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .clickable {
                         onClickListener.invoke()

@@ -30,7 +30,8 @@ import com.iquad.budgetit.model.Currency
 @Composable
 fun CurrencyDropdown(
     selectedCurrency: MutableState<Currency>,
-    size: Int = 16
+    size: Int = 16,
+    modifier: Modifier = Modifier
 ) {
     val isDropDownExpanded = remember { mutableStateOf(false) }
     val items = Currency.entries
@@ -42,8 +43,7 @@ fun CurrencyDropdown(
     ) {
 
         Box(
-            modifier = Modifier
-                .padding(start = 8.dp)
+            modifier = modifier
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,

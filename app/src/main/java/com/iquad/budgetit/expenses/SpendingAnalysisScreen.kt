@@ -142,7 +142,7 @@ fun SpendingAnalysisScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     TotalAmountSection(
                         expensesByCategory.sumOf { it.amount }
@@ -162,7 +162,7 @@ fun IntervalTabBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(R.color.light_blue),
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
             ),
         verticalAlignment = Alignment.CenterVertically,
@@ -228,7 +228,7 @@ fun TimeFrameTabBar(
     Box(
         modifier = Modifier
             .background(
-                color = colorResource(R.color.light_blue),
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
             )
     ) {
@@ -277,9 +277,9 @@ fun ExpensesByCategoryItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
-            .padding(4.dp)
+            .padding(8.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -317,7 +317,7 @@ fun ExpensesByCategoryItem(
                 Text(
                     text = expense.category.name,
                     style = TextStyle(
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = MaterialTheme.typography.titleMedium.fontSize
                     )
                 )
@@ -363,6 +363,7 @@ fun TotalAmountSection(
                 color = colorResource(R.color.colorPrimary),
                 shape = RoundedCornerShape(8.dp)
             )
+            .padding(5.dp)
     ) {
         Text(
             text = stringResource(R.string.total_spending),

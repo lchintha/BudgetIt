@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -36,7 +37,7 @@ fun RegularTextField(
                 shape = RoundedCornerShape(8.dp)
             )
             .background(
-                color = Color.White,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(8.dp)
             ),
         value = value,
@@ -54,12 +55,12 @@ fun RegularTextField(
         textStyle = TextStyle(
             fontSize = 16.sp,
             textAlign = TextAlign.Start,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         ),
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent
         ),

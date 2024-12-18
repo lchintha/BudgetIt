@@ -166,7 +166,10 @@ fun BudgetInputField(
                 ) {
                     CurrencyDropdown(
                         selectedCurrency = selectedCurrency,
-                        size = 18
+                        size = 18,
+                        modifier = Modifier.padding(
+                            8.dp
+                        )
                     )
                 }
             }

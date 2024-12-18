@@ -258,7 +258,7 @@ fun CategoriesTitle(
         Text(
             text = stringResource(R.string.category),
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         )
         Spacer(modifier = Modifier.weight(1f))

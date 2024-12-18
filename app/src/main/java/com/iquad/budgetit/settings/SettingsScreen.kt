@@ -214,7 +214,7 @@ fun LegalSection() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .padding(10.dp)
     ) {
@@ -270,7 +270,7 @@ fun AppearanceSection(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .padding(10.dp)
     ) {
@@ -280,7 +280,7 @@ fun AppearanceSection(
             TitleText(
                 title = stringResource(R.string.appearance),
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -303,7 +303,7 @@ fun MonthlyBudgetSection(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .padding(10.dp)
     ) {
@@ -313,7 +313,7 @@ fun MonthlyBudgetSection(
             TitleText(
                 title = stringResource(R.string.monthly_budget),
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
             Row(
@@ -322,7 +322,9 @@ fun MonthlyBudgetSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CurrencyDropdown(
-                    selectedCurrency = selectedCurrency
+                    selectedCurrency = selectedCurrency,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
                 )
                 InputAmountTextField(
                     onValueChange = {
@@ -413,7 +415,7 @@ fun ShareAndSupportTab(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                color = colorResource(R.color.light_blue)
+                color = MaterialTheme.colorScheme.primaryContainer
             )
             .clickable {
                 onTabClick.invoke()
@@ -435,7 +437,7 @@ fun ShareAndSupportTab(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 ),
                 modifier = Modifier
                     .weight(1f)

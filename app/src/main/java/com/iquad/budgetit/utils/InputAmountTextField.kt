@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -58,7 +59,7 @@ fun InputAmountTextField(
                 Text(
                     text = if (includeCurrencySymbol) "${currency.symbol}0" else "0",
                     modifier = Modifier.fillMaxWidth(),
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontSize = size.sp,
                     textAlign = align
                 )

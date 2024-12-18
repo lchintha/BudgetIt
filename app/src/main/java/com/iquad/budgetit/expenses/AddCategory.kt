@@ -115,7 +115,7 @@ fun CategoryNameSection(
     TitleText(
         title = stringResource(R.string.category_name),
         style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
     )
     Spacer(modifier = Modifier.height(8.dp))
@@ -136,7 +136,7 @@ fun ColorsList(
     TitleText(
         title = stringResource(R.string.color),
         style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
     )
     Spacer(modifier = Modifier.height(8.dp))
@@ -165,7 +165,7 @@ fun IconsList(
     TitleText(
         title = stringResource(R.string.icon),
         style = MaterialTheme.typography.titleMedium.copy(
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onSurface
         )
     )
     Spacer(modifier = Modifier.height(8.dp))

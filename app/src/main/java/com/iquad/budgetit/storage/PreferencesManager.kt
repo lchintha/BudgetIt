@@ -50,7 +50,7 @@ class PreferencesManager private constructor(context: Context) {
 
     // Get saved appearance option
     fun getAppearance(): String {
-        return sharedPreferences.getString(KEY_APPEARANCE, ThemeMode.Light.name)
+        return sharedPreferences.getString(KEY_APPEARANCE, ThemeMode.System.name)
             ?: ThemeMode.Light.name
     }
 }
