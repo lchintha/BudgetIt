@@ -67,7 +67,7 @@ fun HalfCircleProgressBar(
         ) {
             val width = size.width
             val height = size.height
-            val thickness = 120f
+            val thickness = 110f
 
             val radius = minOf(width / 2f, height)
             val topLeft = Offset(

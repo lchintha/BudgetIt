@@ -10,10 +10,6 @@ class BudgetItRepository(private val appDao: AppDao) {
         appDao.insertBudget(budget)
     }
 
-    suspend fun updateBudget(budget: BudgetEntity) {
-        appDao.updateBudget(budget)
-    }
-
     val categories: Flow<List<Category>> = appDao.getCategories()
 
     suspend fun insertCategory(category: Category) {
@@ -48,6 +44,11 @@ class BudgetItRepository(private val appDao: AppDao) {
     // Update an existing expense
     suspend fun updateExpense(expense: ExpenseWithCategoryId) {
         appDao.updateExpense(expense)
+    }
+
+    // Delete expense by ID
+    suspend fun deleteExpenseById(expenseId: Int) {
+        appDao.deleteExpenseById(expenseId)
     }
 
     // Get expenses by month

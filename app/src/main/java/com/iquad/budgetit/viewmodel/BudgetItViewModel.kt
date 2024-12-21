@@ -324,6 +324,28 @@ class BudgetItViewModel(
         }
     }
 
+    fun deleteExpense(id: Int) {
+        viewModelScope.launch {
+            repository.deleteExpenseById(id)
+            updateExpensesListForSelectedTimeFrame()
+        }
+    }
+
+    fun updateExpense(expense: Expense) {
+        viewModelScope.launch {
+            repository.updateExpense(
+                ExpenseWithCategoryId(
+                    id = expense.data.id,
+                    title = expense.data.title,
+                    amount = expense.data.amount,
+                    date = expense.data.date,
+                    categoryId = expense.category.id,
+                )
+            )
+            updateExpensesListForSelectedTimeFrame()
+        }
+    }
+
     private fun groupExpensesByCategory() {
         val expenses = _expensesByTimeFrame.value
         val totalAmount = expenses.sumOf { it.data.amount }
