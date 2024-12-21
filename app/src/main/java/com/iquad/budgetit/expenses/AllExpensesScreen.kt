@@ -1,7 +1,13 @@
 package com.iquad.budgetit.expenses
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,21 +24,29 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
@@ -40,6 +55,9 @@ import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.toComposeColor
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Composable
 fun AllExpensesScreen(
@@ -51,6 +69,7 @@ fun AllExpensesScreen(
     }
     val expenses by viewModel.expenses.collectAsState()
     val budget by viewModel.budgetState.collectAsState()
+    var revealedItemId by remember { mutableStateOf<Int?>(null) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -71,13 +90,150 @@ fun AllExpensesScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(expenses) { expense ->
-                        ExpenseItem(
+                        SwipeableExpenseItem(
                             expense,
-                            currency = budget?.currency ?: Currency.USD
+                            currency = budget?.currency ?: Currency.USD,
+                            onDelete = {
+                                viewModel.deleteExpense(expense.data.id)
+                            },
+                            onEdit = {
+                                viewModel.updateExpense(expense)
+                            },
+                            isRevealed = revealedItemId == expense.data.id,
+                            onReveal = { revealed ->
+                                revealedItemId = if (revealed) expense.data.id else null
+                            }
                         )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun SwipeableExpenseItem(
+    expense: Expense,
+    currency: Currency,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit,
+    isRevealed: Boolean,
+    onReveal: (Boolean) -> Unit
+) {
+    val direction = remember { Animatable(0f) }
+    val width = 50.dp
+    val coroutineScope = rememberCoroutineScope()
+    val totalActionWidth = (width.value * 2) + 8
+
+    LaunchedEffect(isRevealed) {
+        if (!isRevealed) {
+            direction.animateTo(
+                targetValue = 0f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMedium
+                )
+            )
+        }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Background actions (Delete and Edit)
+        Row(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onEdit,
+                modifier = Modifier
+                    .size(width)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier
+                    .size(width)
+                    .background(
+                        color = MaterialTheme.colorScheme.error,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = MaterialTheme.colorScheme.onError
+                )
+            }
+        }
+
+        // Main expense item content
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(direction.value.roundToInt(), 0) }
+                .draggable(
+                    orientation = Orientation.Horizontal,
+                    state = rememberDraggableState { delta ->
+                        coroutineScope.launch {
+//                            direction.snapTo(direction.value + delta)
+                            // Limit the drag based on current state
+                            val newValue = direction.value + delta
+                            val targetValue = when {
+                                // If revealed, allow only positive (right) movement up to 0
+                                isRevealed && newValue > 0 -> 0f
+                                // If revealed, maintain minimum position
+                                isRevealed -> maxOf(newValue, -totalActionWidth * 4)
+                                // If not revealed, don't allow positive movement
+                                newValue > 0 -> 0f
+                                // If not revealed, limit negative movement
+                                else -> maxOf(newValue, -totalActionWidth * 4)
+                            }
+                            direction.snapTo(targetValue)
+                        }
+                    },
+                    onDragStarted = { },
+                    onDragStopped = {
+                        coroutineScope.launch {
+                            val velocity = it
+                            // Determine target value based on current position and velocity
+                            val targetValue = when {
+                                // If swiping right when revealed, close it
+                                isRevealed && direction.value > -totalActionWidth * 3 -> 0f
+                                // If swiping left far enough, reveal options
+                                abs(direction.value) > totalActionWidth / 3 -> -totalActionWidth * 4
+                                // Otherwise, return to closed state
+                                else -> 0f
+                            }
+
+                            direction.animateTo(
+                                targetValue = targetValue,
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium,
+                                    visibilityThreshold = 0.1f
+                                ),
+                                initialVelocity = velocity
+                            )
+                            onReveal(targetValue != 0f)
+                        }
+                    }
+                )
+        ) {
+            ExpenseItem(expense = expense, currency = currency)
         }
     }
 }
