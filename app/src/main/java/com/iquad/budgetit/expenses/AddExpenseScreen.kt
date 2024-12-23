@@ -164,7 +164,7 @@ fun AddExpenseScreen(
                         expenseTitle.value = title
                     },
                     placeholder = stringResource(R.string.whats_this_expense_for),
-                    prePopulatedText = expenseTitle.value,
+                    prePopulatedText = expenseTitle,
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(16.dp))
