@@ -14,7 +14,7 @@
     <string name="update_expense">Update Expense</string>
     <string name="recent_expenses">Recent Expenses</string>
     <string name="all">All</string>
-    <string name="no_recent_expenses">No expenses added in the current month.</string>
+    <string name="no_recent_expenses">No expenses have been added this month.</string>
     <string name="left_to_spend_this_month">Left to spend this month</string>
     <string name="over_spent_this_month">Overspent this month</string>
 
@@ -70,5 +70,9 @@
     <string name="no_expenses_to_display">No expenses to display in the selected timeframe. Please select different dates to see the spending analysis.</string>
     <string name="confirm_budget_change_dialog">Do you want to save your changes before navigating away?</string>
     <string name="discard">Discard</string>
+
+    <!-- Common Strings -->
+    <string name="success">Success</string>
+    <string name="error">Error</string>
 
 </resources>

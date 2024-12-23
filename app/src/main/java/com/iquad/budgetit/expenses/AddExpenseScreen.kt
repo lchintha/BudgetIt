@@ -258,8 +258,7 @@ fun AddExpenseScreen(
         when (uiState) {
             is BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
-                    context = navController.context,
-                    title = "Enter All Fields",
+                    message = "Enter All Fields",
                     messageType = MessageType.FAILURE
                 )
                 viewModel.resetState()

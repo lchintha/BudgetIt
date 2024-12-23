@@ -52,7 +52,7 @@ fun BudgetItToolBar(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = colorResource(R.color.colorPrimary)
                 ),
-                modifier = Modifier.padding(end = 10.dp)
+                modifier = Modifier.padding(end = 16.dp)
                     .clickable {
                         onItemClick.invoke()
                     }

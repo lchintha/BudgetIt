@@ -18,8 +18,7 @@ object Util {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             GlobalStaticMessage.show(
-                context = context,
-                title = "No Browser Found",
+                message = "No Browser Found",
                 messageType = MessageType.FAILURE
             )
         }
@@ -36,8 +35,7 @@ object Util {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             GlobalStaticMessage.show(
-                context = context,
-                title = "No App Found",
+                message = "No App Found",
                 messageType = MessageType.FAILURE
             )
         }
@@ -54,8 +52,7 @@ object Util {
             context.startActivity(intent)
         } else {
             GlobalStaticMessage.show(
-                context = context,
-                title = "No App Found to send feedback",
+                message = "No App Found to send feedback",
                 messageType = MessageType.FAILURE
             )
         }

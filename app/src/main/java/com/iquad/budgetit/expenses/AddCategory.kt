@@ -93,8 +93,7 @@ fun AddCategory(
         when(uiState) {
             is BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
-                    context = navController.context,
-                    title = "Select All Fields",
+                    message = "Select All Fields",
                     messageType = MessageType.FAILURE
                 )
                 viewModel.resetState()

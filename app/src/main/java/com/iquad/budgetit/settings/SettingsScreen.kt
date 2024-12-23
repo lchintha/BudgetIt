@@ -145,8 +145,7 @@ fun SettingsScreen(
 
             BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
-                    context = navController.context,
-                    title = "Enter Budget",
+                    message = "Enter Budget",
                     messageType = MessageType.FAILURE
                 )
                 viewModel.resetState()
