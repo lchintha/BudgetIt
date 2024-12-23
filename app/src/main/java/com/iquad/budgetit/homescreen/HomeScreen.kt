@@ -24,8 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,10 +43,11 @@ import androidx.navigation.NavController
 import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
-import com.iquad.budgetit.expenses.ExpenseItem
 import com.iquad.budgetit.expenses.NoExpensesToDisplay
+import com.iquad.budgetit.expenses.SwipeableExpenseItem
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
+import com.iquad.budgetit.utils.FlexibleAlertDialog
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 
 @Composable
@@ -56,6 +61,8 @@ fun HomeScreen(
     val expenses by viewModel.expenses.collectAsState()
     val totalExpenses by viewModel.totalExpenses.collectAsState()
     val budget by viewModel.budgetState.collectAsState()
+    val revealedItemId = remember { mutableStateOf<Int?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -77,8 +84,35 @@ fun HomeScreen(
         RecentExpenses(
             allExpenses = expenses,
             currency = budget?.currency ?: Currency.USD,
-            onClickListener = {
+            onAllLinkClickListener = {
                 navController.navigate(Screen.AllExpensesScreen.route)
+            },
+            onDeleteClickListener = {
+                showDialog = true
+            },
+            onEditClickListener = {
+                navController.navigate(Screen.AddExpenseScreen.createRoute(revealedItemId.value))
+            },
+            revealedItemId = revealedItemId
+        )
+    }
+
+    if (showDialog) {
+        FlexibleAlertDialog(
+            description = stringResource(R.string.delete_expense),
+            primaryActionText = stringResource(R.string.cancel),
+            secondaryActionText = stringResource(R.string.confirm),
+            primaryActionColor = MaterialTheme.colorScheme.primary,
+            secondaryActionColor = Color.Red,
+            onPrimaryAction = {
+                showDialog = false
+            },
+            onSecondaryAction = {
+                revealedItemId.value?.let { itemId -> viewModel.deleteExpense(itemId) }
+                showDialog = false
+            },
+            onDismiss = {
+                showDialog = false
             }
         )
     }
@@ -174,7 +208,10 @@ fun AddExpenseButton(navController: NavController) {
 fun RecentExpenses(
     allExpenses: List<Expense>,
     currency: Currency,
-    onClickListener: () -> Unit = {},
+    onAllLinkClickListener: () -> Unit = {},
+    onDeleteClickListener: () -> Unit,
+    onEditClickListener: () -> Unit,
+    revealedItemId: MutableState<Int?>
 ) {
     val expenses = allExpenses.sortedByDescending { it.data.date }.take(3)
 
@@ -202,7 +239,7 @@ fun RecentExpenses(
                     ),
                     modifier = Modifier
                         .clickable {
-                            onClickListener.invoke()
+                            onAllLinkClickListener.invoke()
                         }
                         .padding(4.dp)
                 )
@@ -216,9 +253,15 @@ fun RecentExpenses(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(expenses) { expense ->
-                    ExpenseItem(
+                    SwipeableExpenseItem(
                         expense,
-                        currency
+                        currency = currency,
+                        onDelete = onDeleteClickListener,
+                        onEdit = onEditClickListener,
+                        isRevealed = revealedItemId.value == expense.data.id,
+                        onReveal = { revealed ->
+                            revealedItemId.value = if (revealed) expense.data.id else null
+                        }
                     )
                 }
             }
