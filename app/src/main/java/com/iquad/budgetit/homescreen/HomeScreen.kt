@@ -85,7 +85,7 @@ fun HomeScreen(
             allExpenses = expenses,
             currency = budget?.currency ?: Currency.USD,
             onAllLinkClickListener = {
-                navController.navigate(Screen.AllExpensesScreen.route)
+                navController.navigate(Screen.AllExpensesScreen.createRoute())
             },
             onDeleteClickListener = {
                 showDialog = true

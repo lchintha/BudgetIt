@@ -69,6 +69,9 @@ class BudgetItViewModel(
     private val _expensesByTimeFrame = MutableStateFlow<List<Expense>>(emptyList())
     val expensesByTimeFrame: StateFlow<List<Expense>> get() = _expensesByTimeFrame
 
+    private val _expensesByCategoryInTimeFrame = MutableStateFlow<List<Expense>>(emptyList())
+    val expensesByCategoryInTimeFrame: StateFlow<List<Expense>> get() = _expensesByCategoryInTimeFrame
+
     private val _selectedTimeFrame = MutableStateFlow(
         TimeFrame(
             title = "$month $year",
@@ -380,9 +383,14 @@ class BudgetItViewModel(
             .map { (category, categoryExpenses) ->
                 val categoryAmount = categoryExpenses.sumOf { it.data.amount }
                 val percentage = (categoryAmount / totalAmount) * 100
-
                 ExpenseBreakDown(category, categoryAmount, percentage.toFloat())
             }
+    }
+
+    fun filterExpensesByCategoryInTimeFrame(categoryId: Int) {
+        val allExpenses = _expensesByTimeFrame.value
+        val filteredExpenses = allExpenses.filter { it.data.categoryId == categoryId }
+        _expensesByCategoryInTimeFrame.value = filteredExpenses
     }
 
     fun resetState() {

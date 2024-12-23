@@ -64,12 +64,21 @@ import kotlin.math.roundToInt
 @Composable
 fun AllExpensesScreen(
     navController: NavController,
-    viewModel: BudgetItViewModel
+    viewModel: BudgetItViewModel,
+    categoryId: Int?
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.getExpensesForCurrentMonth()
+        if (categoryId != null) {
+            viewModel.filterExpensesByCategoryInTimeFrame(categoryId)
+        } else {
+            viewModel.getExpensesForCurrentMonth()
+        }
     }
-    val expenses by viewModel.expenses.collectAsState()
+    val expenses by if (categoryId != null) {
+        viewModel.expensesByCategoryInTimeFrame.collectAsState()
+    } else {
+        viewModel.expenses.collectAsState()
+    }
     val budget by viewModel.budgetState.collectAsState()
     var revealedItemId by remember { mutableStateOf<Int?>(null) }
     var showDialog by remember { mutableStateOf(false) }

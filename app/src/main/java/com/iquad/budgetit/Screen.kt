@@ -13,7 +13,15 @@ sealed class Screen(val route: String){
         }
     }
     data object SettingsScreen : Screen("settings_screen")
-    data object AllExpensesScreen : Screen("all_expenses_screen")
+    data object AllExpensesScreen : Screen("all_expenses_screen?categoryId={categoryId}") {
+        fun createRoute(categoryId: Int? = null): String {
+            return if (categoryId != null) {
+                "all_expenses_screen?categoryId=$categoryId"
+            } else {
+                "all_expenses_screen?categoryId=-1"
+            }
+        }
+    }
     data object AddCategory : Screen("add_category")
     data object SpendingAnalysisScreen : Screen("spending_analysis_screen")
 }

@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.ExpensesBarGraph
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.model.ExpenseBreakDown
@@ -126,7 +127,12 @@ fun SpendingAnalysisScreen(
                             items(expensesByCategory) { expense ->
                                 ExpensesByCategoryItem(
                                     expense,
-                                    currency = currency?.currency ?: Currency.USD
+                                    currency = currency?.currency ?: Currency.USD,
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.AllExpensesScreen.createRoute(expense.category.id)
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -270,12 +276,14 @@ fun TimeFrameTabBar(
 @Composable
 fun ExpensesByCategoryItem(
     expense: ExpenseBreakDown,
-    currency: Currency = Currency.USD
+    currency: Currency = Currency.USD,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick.invoke() }
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer
             )

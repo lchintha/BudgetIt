@@ -64,10 +64,20 @@ fun BudgetItNavHost(
                 viewModel
             )
         }
-        composable(route = Screen.AllExpensesScreen.route) {
+        composable(
+            route = Screen.AllExpensesScreen.route,
+            arguments = listOf(navArgument("categoryId") {
+                type = NavType.IntType
+                defaultValue = -1
+            })
+        ) {
+            val categoryId = it.arguments?.getInt("categoryId")?.let { id ->
+                if (id == -1) null else id
+            }
             AllExpensesScreen(
                 navController,
-                viewModel
+                viewModel,
+                categoryId
             )
         }
         composable(route = Screen.AddCategory.route) {
