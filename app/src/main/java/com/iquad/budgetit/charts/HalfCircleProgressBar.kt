@@ -21,7 +21,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.iquad.budgetit.R
 import com.iquad.budgetit.model.Currency
+import com.iquad.budgetit.utils.roundToTwoDecimalPlaces
 
 @Composable
 fun HalfCircleProgressBar(
@@ -40,11 +41,17 @@ fun HalfCircleProgressBar(
 ) {
     val backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer
     val percentage: Double
+    val amountToDisplay: Double
+    val textToDisplay: String
     val foregroundColor: Color = if (spentAmount > totalAmount) {
         percentage = 1.0
+        amountToDisplay = spentAmount - totalAmount
+        textToDisplay = stringResource(R.string.over_spent_this_month)
         Color.Red
     } else {
         percentage = spentAmount / totalAmount
+        amountToDisplay = totalAmount - spentAmount
+        textToDisplay = stringResource(R.string.left_to_spend_this_month)
         MaterialTheme.colorScheme.primary
     }
 
@@ -114,7 +121,7 @@ fun HalfCircleProgressBar(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "${currency.symbol}$spentAmount",
+                text = "${currency.symbol}${amountToDisplay.roundToTwoDecimalPlaces()}",
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -124,8 +131,8 @@ fun HalfCircleProgressBar(
                     }
             )
             Text(
-                text = "spent this month",
-                fontSize = 16.sp,
+                text = textToDisplay,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray,
                 textAlign = TextAlign.Center

@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -228,7 +229,7 @@ fun AddExpenseScreen(
                 headline = null,
                 title = null,
                 colors = DatePickerDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surface,
+                    containerColor = BottomSheetDefaults.ContainerColor,
                 )
             )
         }
