@@ -97,22 +97,35 @@ fun AddExpenseScreen(
     val expenseAmount = remember { mutableStateOf("") }
     val expenseTitle = remember { mutableStateOf("") }
     val selectedCategory = remember { mutableStateOf<Category?>(null) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val updatingCategory = remember { mutableIntStateOf(0) }
-
+    val selectedDate = remember { mutableStateOf(LocalDate.now()) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDate.value.toEpochDay() * 86400000,
+        yearRange = IntRange(2000, 2100)
+    )
+    LaunchedEffect(selectedDate.value) {
+        datePickerState.selectedDateMillis = selectedDate.value.toEpochDay() * 86400000
+    }
     LaunchedEffect(key1 = true) {
         viewModel.getCategories()
         expenseId?.let { id ->
             viewModel.getExpenseById(id)
         }
     }
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        datePickerState.selectedDateMillis?.let {
+            val newSelectedDate = LocalDate.ofEpochDay(it / 86400000)
+            selectedDate.value = newSelectedDate
+            showBottomSheet = false
+        }
+    }
     LaunchedEffect(currentExpense) {
-        if(expenseId == null) return@LaunchedEffect
+        if (expenseId == null) return@LaunchedEffect
         currentExpense?.let { expense ->
             expenseAmount.value = expense.data.amount.toString()
             expenseTitle.value = expense.data.title
             selectedCategory.value = expense.category
-            selectedDate = LocalDate.parse(expense.data.date)
+            selectedDate.value = LocalDate.parse(expense.data.date)
         }
     }
 
@@ -131,17 +144,17 @@ fun AddExpenseScreen(
                 onItemClick = {
                     if (expenseId == null) {
                         viewModel.saveExpense(
-                            amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
+                            amount = if (expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
                             title = expenseTitle.value,
-                            date = selectedDate,
+                            date = selectedDate.value,
                             category = selectedCategory.value
                         )
                     } else {
                         viewModel.updateExpenseById(
                             expenseId = expenseId,
-                            amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
+                            amount = if (expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
                             title = expenseTitle.value,
-                            date = selectedDate,
+                            date = selectedDate.value,
                             category = selectedCategory.value ?: return@BudgetItToolBar
                         )
                     }
@@ -191,7 +204,7 @@ fun AddExpenseScreen(
         }
 
         CalendarButton(
-            selectedDate = selectedDate,
+            selectedDate = selectedDate.value,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .wrapContentWidth()
@@ -202,19 +215,6 @@ fun AddExpenseScreen(
                 )
                 .clickable { showBottomSheet = true }
         )
-    }
-
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = selectedDate.toEpochDay() * 86400000,
-        yearRange = IntRange(2000, 2100)
-    )
-
-    LaunchedEffect(datePickerState.selectedDateMillis) {
-        datePickerState.selectedDateMillis?.let {
-            val newSelectedDate = LocalDate.ofEpochDay(it / 86400000)
-            selectedDate = newSelectedDate
-            showBottomSheet = false
-        }
     }
 
     if (showBottomSheet) {
@@ -234,7 +234,7 @@ fun AddExpenseScreen(
         }
     }
 
-    if(showDialog) {
+    if (showDialog) {
         DeleteCategoryDialog(
             categories = categories,
             deletingCategoryId = deletingCategoryId,
@@ -254,7 +254,7 @@ fun AddExpenseScreen(
     }
 
     LaunchedEffect(uiState) {
-        when(uiState) {
+        when (uiState) {
             is BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
                     context = navController.context,
@@ -263,10 +263,12 @@ fun AddExpenseScreen(
                 )
                 viewModel.resetState()
             }
+
             BudgetItViewModel.UiState.Success -> {
                 navController.popBackStack()
                 viewModel.resetState()
             }
+
             else -> {}
         }
     }
@@ -334,7 +336,7 @@ fun CategoriesList(
                     category = category,
                     isSelected = if (!isEditMode) category == selectedCategory.value else false,
                     onCategoryClick = {
-                        if(!isCustomCategory) {
+                        if (!isCustomCategory) {
                             selectedCategory.value = category
                         } else {
                             onCustomCategoryItemClick.invoke()
@@ -355,7 +357,7 @@ fun CategoryItem(
     isSelected: Boolean,
     onCategoryClick: () -> Unit,
     isEditMode: Boolean,
-        viewModel: BudgetItViewModel,
+    viewModel: BudgetItViewModel,
     isCustomCategory: Boolean
 ) {
     val jiggleAnimation = rememberInfiniteTransition(label = "jiggle")
