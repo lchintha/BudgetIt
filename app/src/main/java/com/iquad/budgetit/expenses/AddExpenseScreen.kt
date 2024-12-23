@@ -107,6 +107,7 @@ fun AddExpenseScreen(
         }
     }
     LaunchedEffect(currentExpense) {
+        if(expenseId == null) return@LaunchedEffect
         currentExpense?.let { expense ->
             expenseAmount.value = expense.data.amount.toString()
             expenseTitle.value = expense.data.title
