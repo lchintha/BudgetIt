@@ -74,6 +74,26 @@ interface AppDao {
     @Query("SELECT * FROM expenses_table ORDER BY date DESC")
     fun getAllExpenses(): Flow<List<Expense>>
 
+    @Transaction
+    @Query("SELECT * FROM expenses_table WHERE id = :expenseId")
+    suspend fun getExpenseById(expenseId: Int): Expense?
+
+    @Query("""
+    UPDATE expenses_table 
+    SET title = :title, 
+        amount = :amount, 
+        date = :date, 
+        category_id = :categoryId 
+    WHERE id = :expenseId
+""")
+    suspend fun updateExpenseById(
+        expenseId: Int,
+        title: String,
+        amount: Double,
+        date: String,
+        categoryId: Int
+    )
+
     // Get expenses by month (assuming date is in 'YYYY-MM-DD' format)
     @Transaction
     @Query("SELECT * FROM expenses_table WHERE substr(date, 1, 7) = :month ORDER BY date DESC")

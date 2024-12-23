@@ -81,11 +81,9 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddExpenseScreen(
     navController: NavController,
-    viewModel: BudgetItViewModel
+    viewModel: BudgetItViewModel,
+    expenseId: Int?
 ) {
-    LaunchedEffect(key1 = true) {
-        viewModel.getCategories()
-    }
     val uiState by viewModel.uiState.observeAsState()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -94,12 +92,28 @@ fun AddExpenseScreen(
     val budget by viewModel.budgetState.collectAsState()
     val showDialog by viewModel.displayDialog.collectAsState()
     val deletingCategoryId by viewModel.deletingCategory.collectAsState()
+    val currentExpense by viewModel.currentExpense.collectAsState()
 
     val expenseAmount = remember { mutableStateOf("") }
     val expenseTitle = remember { mutableStateOf("") }
     val selectedCategory = remember { mutableStateOf<Category?>(null) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val updatingCategory = remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getCategories()
+        expenseId?.let { id ->
+            viewModel.getExpenseById(id)
+        }
+    }
+    LaunchedEffect(currentExpense) {
+        currentExpense?.let { expense ->
+            expenseAmount.value = expense.data.amount.toString()
+            expenseTitle.value = expense.data.title
+            selectedCategory.value = expense.category
+            selectedDate = LocalDate.parse(expense.data.date)
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -110,16 +124,26 @@ fun AddExpenseScreen(
                 .padding(bottom = 56.dp)
         ) {
             BudgetItToolBar(
-                title = stringResource(R.string.add_expense),
+                title = stringResource(if (expenseId == null) R.string.add_expense else R.string.update_expense),
                 toolbarOption = stringResource(R.string.save),
-                onBackPress =  { navController.popBackStack() },
+                onBackPress = { navController.popBackStack() },
                 onItemClick = {
-                    viewModel.saveExpense(
-                        amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
-                        title = expenseTitle.value,
-                        date = selectedDate,
-                        category = selectedCategory.value
-                    )
+                    if (expenseId == null) {
+                        viewModel.saveExpense(
+                            amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
+                            title = expenseTitle.value,
+                            date = selectedDate,
+                            category = selectedCategory.value
+                        )
+                    } else {
+                        viewModel.updateExpenseById(
+                            expenseId = expenseId,
+                            amount = if(expenseAmount.value.isEmpty()) 0.0 else expenseAmount.value.toDouble(),
+                            title = expenseTitle.value,
+                            date = selectedDate,
+                            category = selectedCategory.value ?: return@BudgetItToolBar
+                        )
+                    }
                 }
             )
             Column(
@@ -140,6 +164,7 @@ fun AddExpenseScreen(
                         expenseTitle.value = title
                     },
                     placeholder = stringResource(R.string.whats_this_expense_for),
+                    prePopulatedText = expenseTitle.value,
                     modifier = Modifier
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -202,7 +227,7 @@ fun AddExpenseScreen(
                 headline = null,
                 title = null,
                 colors = DatePickerDefaults.colors(
-                    containerColor = colorResource(R.color.background),
+                    containerColor = MaterialTheme.colorScheme.surface,
                 )
             )
         }

@@ -84,6 +84,9 @@ class BudgetItViewModel(
     private val _currentTheme = MutableStateFlow(ThemeMode.valueOf(storageManager.getAppearance()))
     val currentTheme: StateFlow<ThemeMode> get() = _currentTheme
 
+    private val _currentExpense = MutableStateFlow<Expense?>(null)
+    val currentExpense: StateFlow<Expense?> get() = _currentExpense
+
     init {
         viewModelScope.launch {
             repository.budget.collect { budget ->
@@ -188,6 +191,45 @@ class BudgetItViewModel(
                     )
                 )
                 _uiState.value = UiState.Success
+            }
+        }
+    }
+
+    fun getExpenseById(expenseId: Int) {
+        viewModelScope.launch {
+            try {
+                val expense = repository.getExpenseById(expenseId)
+                _currentExpense.value = expense
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error
+            }
+        }
+    }
+
+    fun updateExpenseById(
+        expenseId: Int,
+        amount: Double,
+        title: String,
+        date: LocalDate,
+        category: Category
+    ) {
+        viewModelScope.launch {
+            if (amount == 0.0 || title.isEmpty()) {
+                _uiState.value = UiState.Error
+                return@launch
+            }
+
+            try {
+                repository.updateExpenseById(
+                    expenseId = expenseId,
+                    title = title,
+                    amount = amount,
+                    date = date.toFormattedString(),
+                    categoryId = category.id
+                )
+                _uiState.value = UiState.Success
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error
             }
         }
     }
@@ -327,22 +369,7 @@ class BudgetItViewModel(
     fun deleteExpense(id: Int) {
         viewModelScope.launch {
             repository.deleteExpenseById(id)
-            updateExpensesListForSelectedTimeFrame()
-        }
-    }
-
-    fun updateExpense(expense: Expense) {
-        viewModelScope.launch {
-            repository.updateExpense(
-                ExpenseWithCategoryId(
-                    id = expense.data.id,
-                    title = expense.data.title,
-                    amount = expense.data.amount,
-                    date = expense.data.date,
-                    categoryId = expense.category.id,
-                )
-            )
-            updateExpensesListForSelectedTimeFrame()
+            _expenses.value = _expenses.value.filter { it.data.id != id }
         }
     }
 

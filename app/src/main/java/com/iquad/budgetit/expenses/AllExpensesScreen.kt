@@ -50,9 +50,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
+import com.iquad.budgetit.utils.FlexibleAlertDialog
 import com.iquad.budgetit.utils.toComposeColor
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 import kotlinx.coroutines.launch
@@ -70,6 +72,7 @@ fun AllExpensesScreen(
     val expenses by viewModel.expenses.collectAsState()
     val budget by viewModel.budgetState.collectAsState()
     var revealedItemId by remember { mutableStateOf<Int?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -94,10 +97,10 @@ fun AllExpensesScreen(
                             expense,
                             currency = budget?.currency ?: Currency.USD,
                             onDelete = {
-                                viewModel.deleteExpense(expense.data.id)
+                                showDialog = true
                             },
                             onEdit = {
-                                viewModel.updateExpense(expense)
+                                navController.navigate(Screen.AddExpenseScreen.createRoute(expense.data.id))
                             },
                             isRevealed = revealedItemId == expense.data.id,
                             onReveal = { revealed ->
@@ -108,6 +111,26 @@ fun AllExpensesScreen(
                 }
             }
         }
+    }
+
+    if (showDialog) {
+        FlexibleAlertDialog(
+            description = stringResource(R.string.delete_expense),
+            primaryActionText = stringResource(R.string.cancel),
+            secondaryActionText = stringResource(R.string.confirm),
+            primaryActionColor = MaterialTheme.colorScheme.primary,
+            secondaryActionColor = Color.Red,
+            onPrimaryAction = {
+                showDialog = false
+            },
+            onSecondaryAction = {
+                revealedItemId?.let { viewModel.deleteExpense(it) }
+                showDialog = false
+            },
+            onDismiss = {
+                showDialog = false
+            }
+        )
     }
 }
 
@@ -169,14 +192,14 @@ fun SwipeableExpenseItem(
                 modifier = Modifier
                     .size(width)
                     .background(
-                        color = MaterialTheme.colorScheme.error,
+                        color = Color.Red,
                         shape = RoundedCornerShape(16.dp)
                     )
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.onError
+                    tint = Color.White
                 )
             }
         }
@@ -189,7 +212,6 @@ fun SwipeableExpenseItem(
                     orientation = Orientation.Horizontal,
                     state = rememberDraggableState { delta ->
                         coroutineScope.launch {
-//                            direction.snapTo(direction.value + delta)
                             // Limit the drag based on current state
                             val newValue = direction.value + delta
                             val targetValue = when {

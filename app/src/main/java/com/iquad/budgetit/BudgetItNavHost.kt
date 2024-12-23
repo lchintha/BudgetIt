@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.iquad.budgetit.enterbudget.EnterBudgetScreen
 import com.iquad.budgetit.expenses.AddCategory
 import com.iquad.budgetit.expenses.AddExpenseScreen
@@ -40,10 +42,20 @@ fun BudgetItNavHost(
                 viewModel
             )
         }
-        composable(route = Screen.AddExpenseScreen.route) {
+        composable(
+            route = Screen.AddExpenseScreen.route,
+            arguments = listOf(navArgument("expenseId") {
+                type = NavType.IntType
+                defaultValue = -1
+            })
+        ) { backStackEntry ->
+            val expenseId = backStackEntry.arguments?.getInt("expenseId")?.let { id ->
+                if (id == -1) null else id
+            }
             AddExpenseScreen(
-                navController,
-                viewModel
+                navController = navController,
+                viewModel = viewModel,
+                expenseId = expenseId
             )
         }
         composable(route = Screen.SettingsScreen.route) {

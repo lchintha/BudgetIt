@@ -128,7 +128,7 @@ fun AddExpenseButton(navController: NavController) {
                 color = MaterialTheme.colorScheme.primaryContainer
             )
             .clickable {
-                navController.navigate(Screen.AddExpenseScreen.route)
+                navController.navigate(Screen.AddExpenseScreen.createRoute())
             }
     ) {
         Row(

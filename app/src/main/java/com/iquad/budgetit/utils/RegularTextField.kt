@@ -25,9 +25,10 @@ import androidx.compose.ui.unit.sp
 fun RegularTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
+    prePopulatedText: String = "",
     modifier: Modifier
 ) {
-    var value by remember { mutableStateOf("") }
+    var value by remember { mutableStateOf(prePopulatedText) }
     TextField(
         modifier = modifier
             .fillMaxWidth()

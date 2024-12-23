@@ -51,6 +51,26 @@ class BudgetItRepository(private val appDao: AppDao) {
         appDao.deleteExpenseById(expenseId)
     }
 
+    suspend fun getExpenseById(expenseId: Int): Expense? {
+        return appDao.getExpenseById(expenseId)
+    }
+
+    suspend fun updateExpenseById(
+        expenseId: Int,
+        title: String,
+        amount: Double,
+        date: String,
+        categoryId: Int
+    ) {
+        appDao.updateExpenseById(
+            expenseId = expenseId,
+            title = title,
+            amount = amount,
+            date = date,
+            categoryId = categoryId
+        )
+    }
+
     // Get expenses by month
     fun getExpensesByMonth(month: String): Flow<List<Expense>> {
         return appDao.getExpensesByMonth(month)
