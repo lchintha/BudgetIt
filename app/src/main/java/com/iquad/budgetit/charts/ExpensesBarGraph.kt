@@ -52,54 +52,68 @@ fun ExpensesBarGraph(
         val canvasWidth = size.width
         val canvasHeight = size.height
 
-        val padding = 40.dp.toPx() // Increased padding for Y-axis labels
+        val padding = 40.dp.toPx()
         val bottomPadding = 32.dp.toPx()
+        val topPadding = 20.dp.toPx()
+        val graphHeight = canvasHeight - bottomPadding - topPadding
         val graphWidth = canvasWidth - 2 * padding
-        val graphHeight = canvasHeight - bottomPadding
 
-        val maxAmount = groupedExpenses.values.maxOrNull() ?: 0.0
-
+        val maxAmount = (groupedExpenses.values.maxOrNull() ?: 0.0).coerceAtLeast(1.0)
         val barWidth = graphWidth / groupedExpenses.size * 0.8f
-        val scaleFactor = (graphHeight - 20.dp.toPx()) / maxAmount
 
-        // Draw Y-axis labels
+        // Calculate scale factor based on available graph height
+        val scaleFactor = graphHeight / maxAmount
+
+        // Calculate baseline Y position
+        val baselineY = canvasHeight - bottomPadding
+
+        // Draw Y-axis labels and grid lines
         val yAxisLabelCount = 5
         for (i in 0 until yAxisLabelCount) {
             val yValue = (maxAmount * i / (yAxisLabelCount - 1)).roundToInt()
-            val yPos = graphHeight - (yValue * scaleFactor) + bottomPadding
+            val yPos = baselineY - (yValue * scaleFactor)
 
-            drawText(
-                textMeasurer = textMeasurer,
-                text = yValue.toString(),
-                topLeft = Offset(10.dp.toPx(), yPos.toFloat()),
-                style = TextStyle(
-                    color = textColor,
-                    fontSize = 10.sp
-                )
-            )
-
-            // Optional: Draw light grid lines
+            // Draw grid line
             drawLine(
                 color = Color.LightGray.copy(alpha = 0.3f),
                 start = Offset(padding, yPos.toFloat()),
                 end = Offset(canvasWidth - padding, yPos.toFloat())
             )
+
+            // Draw Y-axis label
+            drawText(
+                textMeasurer = textMeasurer,
+                text = yValue.toString(),
+                topLeft = Offset(10.dp.toPx(), (yPos - 5.dp.toPx()).toFloat()),
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = 10.sp
+                )
+            )
         }
 
+        // Draw baseline
+        drawLine(
+            color = Color.LightGray,
+            start = Offset(padding, baselineY),
+            end = Offset(canvasWidth - padding, baselineY)
+        )
+
+        // Draw bars and labels
         groupedExpenses.entries.forEachIndexed { index, (label, amount) ->
-            val barHeight = amount * scaleFactor
+            val barHeight = (amount * scaleFactor).toFloat()
             val left = padding + index * (graphWidth / groupedExpenses.size)
 
-            // Draw rounded bar
+            // Draw bar starting from baseline
             drawRoundedBar(
                 left = left,
-                bottom = (canvasHeight - barHeight - bottomPadding).toFloat(),
+                baselineY = baselineY,
                 width = barWidth,
-                height = barHeight.toFloat(),
+                height = barHeight,
                 color = barColor.copy(alpha = 0.7f)
             )
 
-            // Modify label based on tab item
+            // Format and draw X-axis label
             val displayLabel = when (tabItem) {
                 TabItem.Monthly -> {
                     val day = label.split(" ")[1].toInt()
@@ -108,16 +122,14 @@ fun ExpensesBarGraph(
                 else -> label
             }
 
-            // Measure label width for centering
             val labelSize = textMeasurer.measure(displayLabel)
             val labelWidth = labelSize.size.width
             val labelX = left + (barWidth - labelWidth) / 2
 
-            // Draw label
             drawText(
                 textMeasurer = textMeasurer,
                 text = displayLabel,
-                topLeft = Offset(labelX, canvasHeight - 24.dp.toPx()),
+                topLeft = Offset(labelX, baselineY + 8.dp.toPx()),
                 style = TextStyle(
                     color = textColor,
                     fontSize = 10.sp
@@ -127,43 +139,45 @@ fun ExpensesBarGraph(
     }
 }
 
-// Helper function to draw rounded bar
+// Updated helper function to draw rounded bar with correct positioning
 private fun DrawScope.drawRoundedBar(
     left: Float,
-    bottom: Float,
+    baselineY: Float,
     width: Float,
     height: Float,
     color: Color
 ) {
     val cornerRadius = 12f
     val path = Path().apply {
-        moveTo(left, bottom + cornerRadius)
+        // Start from the baseline
+        moveTo(left, baselineY)
 
-        // Top left rounded corner
+        // Draw left side up to the rounded corner
+        lineTo(left, baselineY - height + cornerRadius)
+
+        // Draw top-left rounded corner
         quadraticTo(
             left,
-            bottom,
+            baselineY - height,
             left + cornerRadius,
-            bottom
+            baselineY - height
         )
 
-        // Top line
-        lineTo(left + width - cornerRadius, bottom)
+        // Draw top line
+        lineTo(left + width - cornerRadius, baselineY - height)
 
-        // Top right rounded corner
+        // Draw top-right rounded corner
         quadraticTo(
             left + width,
-            bottom,
+            baselineY - height,
             left + width,
-            bottom + cornerRadius
+            baselineY - height + cornerRadius
         )
 
-        // Right line
-        lineTo(left + width, bottom + height)
+        // Draw right side down to baseline
+        lineTo(left + width, baselineY)
 
-        // Bottom line
-        lineTo(left, bottom + height)
-
+        // Close the path
         close()
     }
 
