@@ -93,7 +93,7 @@ fun AddCategory(
         when(uiState) {
             is BudgetItViewModel.UiState.Error -> {
                 GlobalStaticMessage.show(
-                    message = "Select All Fields",
+                    message = "Please input all fields.",
                     messageType = MessageType.FAILURE
                 )
                 viewModel.resetState()

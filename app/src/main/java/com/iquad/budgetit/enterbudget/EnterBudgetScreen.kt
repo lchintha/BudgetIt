@@ -159,7 +159,7 @@ fun BudgetInputField(
                 Box(
                     modifier = Modifier
                         .background(
-                        color = Color(0xFFF0F0F0),
+                        color = MaterialTheme.colorScheme.onSurface,
                         shape = CircleShape
                     )
                 ) {
