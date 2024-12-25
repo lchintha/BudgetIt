@@ -159,7 +159,7 @@ fun BudgetInputField(
                 Box(
                     modifier = Modifier
                         .background(
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.surface,
                         shape = CircleShape
                     )
                 ) {
@@ -167,7 +167,7 @@ fun BudgetInputField(
                         selectedCurrency = selectedCurrency,
                         size = 18,
                         modifier = Modifier.padding(
-                            8.dp
+                            0.dp
                         )
                     )
                 }
