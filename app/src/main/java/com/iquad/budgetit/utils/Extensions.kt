@@ -21,4 +21,16 @@ fun String.toLocalDate(): LocalDate {
     return LocalDate.parse(this, DateTimeFormatter.ISO_LOCAL_DATE)
 }
 
+fun String.toFormattedDate(
+    inputPattern: String = "yyyy-MM-dd",
+    outputPattern: String = "MMM d, yyyy"
+): String {
+    return try {
+        val date = LocalDate.parse(this, DateTimeFormatter.ofPattern(inputPattern))
+        date.format(DateTimeFormatter.ofPattern(outputPattern))
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Failed to parse date: $this", e)
+    }
+}
+
 fun Double.roundToTwoDecimalPlaces(): Double = "%.2f".format(this).toDouble()

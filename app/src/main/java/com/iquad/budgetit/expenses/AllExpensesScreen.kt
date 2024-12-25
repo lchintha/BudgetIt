@@ -56,6 +56,7 @@ import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.FlexibleAlertDialog
 import com.iquad.budgetit.utils.toComposeColor
+import com.iquad.budgetit.utils.toFormattedDate
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -325,7 +326,7 @@ fun ExpenseItem(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = expense.data.date,
+                    text = expense.data.date.toFormattedDate(),
                     style = TextStyle(
                         color = Color.Gray,
                         fontSize = MaterialTheme.typography.bodySmall.fontSize
