@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.MailOutline
@@ -75,6 +77,8 @@ fun SettingsScreen(
     val themeMode by viewModel.currentTheme.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
+    val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -97,6 +101,7 @@ fun SettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
                     .padding(16.dp)
                     .weight(1f),
             ) {
@@ -370,6 +375,7 @@ fun ThemeModesList(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
