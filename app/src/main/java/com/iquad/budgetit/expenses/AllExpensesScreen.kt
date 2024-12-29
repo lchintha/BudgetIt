@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -53,8 +52,8 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
-import com.iquad.budgetit.utils.BudgetItToolBar
 import com.iquad.budgetit.utils.FlexibleAlertDialog
+import com.iquad.budgetit.utils.SearchableBudgetItToolbar
 import com.iquad.budgetit.utils.toComposeColor
 import com.iquad.budgetit.utils.toFormattedDate
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
@@ -75,49 +74,56 @@ fun AllExpensesScreen(
             viewModel.getExpensesForCurrentMonth()
         }
     }
+    var searchQuery by remember { mutableStateOf("") }
     val expenses by if (categoryId != null) {
         viewModel.expensesByCategoryInTimeFrame.collectAsState()
     } else {
         viewModel.expenses.collectAsState()
     }
+    val filteredExpenses = remember(expenses, searchQuery) {
+        if (searchQuery.isEmpty()) {
+            expenses
+        } else {
+            expenses.filter { expense ->
+                expense.data.title.contains(searchQuery, ignoreCase = true)
+            }
+        }
+    }
     val budget by viewModel.budgetState.collectAsState()
     var revealedItemId by remember { mutableStateOf<Int?>(null) }
     var showDialog by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column {
-            BudgetItToolBar(
-                title = stringResource(R.string.all_expenses),
-                onBackPress = { navController.popBackStack() }
-            )
-            Column(
+    Column {
+        SearchableBudgetItToolbar(
+            title = stringResource(R.string.all_expenses),
+            onBackPressed = { navController.popBackStack() },
+            onSearchQueryChanged = { query -> searchQuery = query }
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    items(expenses) { expense ->
-                        SwipeableExpenseItem(
-                            expense,
-                            currency = budget?.currency ?: Currency.USD,
-                            onDelete = {
-                                showDialog = true
-                            },
-                            onEdit = {
-                                navController.navigate(Screen.AddExpenseScreen.createRoute(expense.data.id))
-                            },
-                            isRevealed = revealedItemId == expense.data.id,
-                            onReveal = { revealed ->
-                                revealedItemId = if (revealed) expense.data.id else null
-                            }
-                        )
-                    }
+                items(filteredExpenses) { expense ->
+                    RevealableExpenseItem(
+                        expense,
+                        currency = budget?.currency ?: Currency.USD,
+                        onDelete = {
+                            showDialog = true
+                        },
+                        onEdit = {
+                            navController.navigate(Screen.AddExpenseScreen.createRoute(expense.data.id))
+                        },
+                        isRevealed = revealedItemId == expense.data.id,
+                        onReveal = { revealed ->
+                            revealedItemId = if (revealed) expense.data.id else null
+                        }
+                    )
                 }
             }
         }
@@ -145,7 +151,7 @@ fun AllExpensesScreen(
 }
 
 @Composable
-fun SwipeableExpenseItem(
+fun RevealableExpenseItem(
     expense: Expense,
     currency: Currency,
     onDelete: () -> Unit,

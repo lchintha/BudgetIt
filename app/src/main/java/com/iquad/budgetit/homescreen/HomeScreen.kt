@@ -44,7 +44,7 @@ import com.iquad.budgetit.R
 import com.iquad.budgetit.Screen
 import com.iquad.budgetit.charts.HalfCircleProgressBar
 import com.iquad.budgetit.expenses.NoExpensesToDisplay
-import com.iquad.budgetit.expenses.SwipeableExpenseItem
+import com.iquad.budgetit.expenses.RevealableExpenseItem
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.storage.Expense
 import com.iquad.budgetit.utils.FlexibleAlertDialog
@@ -253,7 +253,7 @@ fun RecentExpenses(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(expenses) { expense ->
-                    SwipeableExpenseItem(
+                    RevealableExpenseItem(
                         expense,
                         currency = currency,
                         onDelete = onDeleteClickListener,

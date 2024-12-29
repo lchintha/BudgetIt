@@ -88,7 +88,7 @@ fun SettingsScreen(
         ) {
             BudgetItToolBar(
                 title = stringResource(R.string.settings),
-                onBackPress = {
+                onBackPressed = {
                     if (selectedCurrency.value != budget?.currency ||
                         selectedAmount.value != (budget?.amount?.toString() ?: "0")
                     ) {

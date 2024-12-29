@@ -66,8 +66,8 @@ fun AddCategory(
             BudgetItToolBar(
                 title = stringResource(R.string.add_category),
                 toolbarOption = stringResource(R.string.save),
-                onBackPress =  { navController.popBackStack() },
-                onItemClick = {
+                onBackPressed =  { navController.popBackStack() },
+                onItemClicked = {
                     viewModel.addCategory(
                         categoryName.value,
                         selectedColor.value,

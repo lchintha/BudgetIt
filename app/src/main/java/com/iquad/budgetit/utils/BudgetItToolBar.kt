@@ -23,8 +23,8 @@ import com.iquad.budgetit.R
 fun BudgetItToolBar(
     title: String,
     toolbarOption: String? = null,
-    onBackPress: () -> Unit = {},
-    onItemClick: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
+    onItemClicked: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -32,7 +32,7 @@ fun BudgetItToolBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = {
-            onBackPress.invoke()
+            onBackPressed.invoke()
         }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -54,7 +54,7 @@ fun BudgetItToolBar(
                 ),
                 modifier = Modifier.padding(end = 16.dp)
                     .clickable {
-                        onItemClick.invoke()
+                        onItemClicked.invoke()
                     }
             )
         }
@@ -68,6 +68,6 @@ fun BudgetItToolBarPreview() {
     BudgetItToolBar(
         "Add Expense",
         "Save",
-        onBackPress = {},
+        onBackPressed = {},
     )
 }

@@ -78,7 +78,7 @@ fun SpendingAnalysisScreen(
             Column {
                 BudgetItToolBar(
                     title = stringResource(R.string.spending_analysis),
-                    onBackPress = { navController.popBackStack() }
+                    onBackPressed = { navController.popBackStack() }
                 )
             }
             Column(
