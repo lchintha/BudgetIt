@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.iquad.budgetit.R
+import com.iquad.budgetit.Screen
 import com.iquad.budgetit.model.Currency
 import com.iquad.budgetit.model.ThemeMode
 import com.iquad.budgetit.utils.BudgetItToolBar
@@ -76,6 +77,8 @@ fun SettingsScreen(
     val selectedAmount = remember { mutableStateOf(budget?.amount?.toString() ?: "0") }
     val themeMode by viewModel.currentTheme.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    val privacyPolicy = stringResource(R.string.privacy_policy)
+    val termsAndConditions = stringResource(R.string.terms_and_conditions)
 
     val scrollState = rememberScrollState()
 
@@ -114,7 +117,24 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 ShareAndSupportSection()
                 Spacer(modifier = Modifier.height(16.dp))
-                LegalSection(context = navController.context)
+                LegalSection(
+                    onTermsAndConditionsClick = {
+                        navController.navigate(
+                            Screen.WebPage.createRoute(
+                                url = tncUrl,
+                                title = termsAndConditions
+                            )
+                        )
+                    },
+                    onPrivacyPolicyClick = {
+                        navController.navigate(
+                            Screen.WebPage.createRoute(
+                                url = privacyPolicyUrl,
+                                title = privacyPolicy
+                            )
+                        )
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
             VersionSection()
@@ -223,7 +243,8 @@ fun ShareAndSupportSection(
 
 @Composable
 fun LegalSection(
-    context: Context
+    onTermsAndConditionsClick: () -> Unit,
+    onPrivacyPolicyClick: () -> Unit,
 ) {
     TitleText(
         title = stringResource(R.string.legal)
@@ -248,7 +269,7 @@ fun LegalSection(
                 modifier = Modifier
                     .padding(5.dp)
                     .clickable {
-                        Util.launchUrl(context, tncUrl)
+                        onTermsAndConditionsClick.invoke()
                     }
             )
             Text(
@@ -260,7 +281,7 @@ fun LegalSection(
                 modifier = Modifier
                     .padding(start = 5.dp, bottom = 5.dp)
                     .clickable {
-                        Util.launchUrl(context, privacyPolicyUrl)
+                        onPrivacyPolicyClick.invoke()
                     }
             )
         }

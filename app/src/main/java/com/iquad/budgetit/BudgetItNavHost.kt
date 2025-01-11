@@ -16,7 +16,9 @@ import com.iquad.budgetit.expenses.AllExpensesScreen
 import com.iquad.budgetit.expenses.SpendingAnalysisScreen
 import com.iquad.budgetit.homescreen.HomeScreen
 import com.iquad.budgetit.settings.SettingsScreen
+import com.iquad.budgetit.utils.WebPage
 import com.iquad.budgetit.viewmodel.BudgetItViewModel
+import java.net.URLDecoder
 
 @Composable
 fun BudgetItNavHost(
@@ -90,6 +92,32 @@ fun BudgetItNavHost(
             SpendingAnalysisScreen(
                 navController,
                 viewModel
+            )
+        }
+        composable(
+            route = Screen.WebPage.route,
+            arguments = listOf(
+                navArgument("url") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument("title") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val url = backStackEntry.arguments?.getString("url")?.let {
+                URLDecoder.decode(it, "UTF-8")
+            } ?: ""
+            val title = backStackEntry.arguments?.getString("title")?.let {
+                URLDecoder.decode(it, "UTF-8")
+            } ?: ""
+
+            WebPage(
+                navController = navController,
+                url = url,
+                title = title
             )
         }
     }

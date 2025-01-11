@@ -67,6 +67,9 @@ dependencies {
     //navigation
     implementation(libs.androidx.navigation.compose)
 
+    //WebKit
+    implementation(libs.androidx.webkit)
+
     //state
     implementation(libs.androidx.lifecycle.runtime.compose)
 

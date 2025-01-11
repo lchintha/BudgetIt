@@ -1,5 +1,8 @@
 package com.iquad.budgetit
 
+import java.io.UnsupportedEncodingException
+import java.net.URLEncoder
+
 sealed class Screen(val route: String){
     data object EnterBudget : Screen("enter_budget")
     data object HomeScreen : Screen("home_screen")
@@ -24,4 +27,15 @@ sealed class Screen(val route: String){
     }
     data object AddCategory : Screen("add_category")
     data object SpendingAnalysisScreen : Screen("spending_analysis_screen")
+    data object WebPage : Screen("webpage?url={url}&title={title}") {
+        fun createRoute(url: String, title: String): String {
+            return try {
+                val encodedUrl = URLEncoder.encode(url, "UTF-8")
+                val encodedTitle = URLEncoder.encode(title, "UTF-8")
+                "webpage?url=$encodedUrl&title=$encodedTitle"
+            } catch (e: UnsupportedEncodingException) {
+                "webpage?url=&title="
+            }
+        }
+    }
 }

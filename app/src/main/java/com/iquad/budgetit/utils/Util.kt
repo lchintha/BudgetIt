@@ -7,8 +7,8 @@ import android.net.Uri
 
 const val playStoreUrl = "https://play.google.com/store/apps/details?id=com.vrcmicrotech.aproundup&hl=en_US"
 const val email = "chintap94@gmail.com"
-const val tncUrl = "https://www.google.com"
-const val privacyPolicyUrl = "https://www.google.com"
+const val tncUrl = "file:///android_asset/terms_conditions.html"
+const val privacyPolicyUrl = "file:///android_asset/privacy_policy.html"
 
 object Util {
     //Launch URL in browser
